@@ -1,5 +1,5 @@
 # Copyright 2017 Google Inc. All Rights Reserved.
-#
+# 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -106,18 +106,18 @@ class AttentionModel(model.Model):
     # Only generate alignment in greedy INFER mode.
     alignment_history = (self.mode == tf.contrib.learn.ModeKeys.INFER and
                          beam_width == 0)
+    # cell = tf.contrib.seq2seq.AttentionWrapper(
+    #     cell,
+    #     attention_mechanism,
+    #     attention_layer_size=num_units,
+    #     alignment_history=alignment_history,
+    #     name="attention")
     cell = tf.contrib.seq2seq.AttentionWrapper(
         cell,
         attention_mechanism,
         attention_layer_size=num_units,
         alignment_history=alignment_history,
         name="attention")
-    # cell = joint_attention.AttentionWrapper(
-    #     cell,
-    #     attention_mechanism,
-    #     attention_layer_size=num_units,
-    #     alignment_history=alignment_history,
-    #     name="attention")
 
     # TODO(thangluong): do we need num_layers, num_gpus?
     cell = tf.contrib.rnn.DeviceWrapper(cell,

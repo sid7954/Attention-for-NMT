@@ -643,6 +643,48 @@ class _BaseMonotonicAttentionMechanism(_BaseAttentionMechanism):
         array_ops.zeros((batch_size,), dtype=dtypes.int32), max_time,
         dtype=dtype)
 
+# class JointAttention(_BaseAttentionMechanism):
+
+#   def __init__(self,
+#                num_units,
+#                memory,
+#                memory_sequence_length=None,
+#                normalize=False,
+#                score_mask_value=float("-inf"),
+#                sigmoid_noise=0.,
+#                sigmoid_noise_seed=None,
+#                score_bias_init=0.,
+#                mode="parallel",
+#                name="JointAttention"):
+#     wrapped_probability_fn = functools.partial(
+#           _monotonic_probability_fn,, mode=mode, seed=sigmoid_noise_seed)
+#       super(BaseAttentionMechanism, self).__init__(
+#           query_layer=layers_core.Dense(
+#               num_units, name="query_layer", use_bias=False),
+#           memory_layer=layers_core.Dense(
+#               num_units, name="memory_layer", use_bias=False),
+#           memory=memory,
+#           probability_fn=wrapped_probability_fn,
+#           memory_sequence_length=memory_sequence_length,
+#           score_mask_value=score_mask_value,
+#           name=name)
+#       self._num_units = num_units
+#       self._normalize = normalize
+#       self._name = name
+#       self._score_bias_init = score_bias_init
+# 
+#   def __call__(self, query, previous_alignments):
+#     with variable_scope.variable_scope(
+#         None, "bahdanau_monotonic_attention", [query]):
+#       processed_query = self.query_layer(query) if self.query_layer else query
+#       score = _bahdanau_score(processed_query, self._keys, self._normalize)
+#       score_bias = variable_scope.get_variable(
+#           "attention_score_bias", dtype=processed_query.dtype,
+#           initializer=self._score_bias_init)
+#       score += score_bias
+#     alignments = self._probability_fn(score, previous_alignments)
+#     return alignments
+
 
 class BahdanauMonotonicAttention(_BaseMonotonicAttentionMechanism):
   """Monotonic attention mechanism with Bahadanau-style energy function.
