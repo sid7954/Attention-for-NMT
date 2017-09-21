@@ -135,6 +135,7 @@ class OurDense(layers_core.Dense):
                name=None,
                encoder_states=None,
                embedding_encoder=None,
+               num_units=None,
                **kwargs):
     super(layers_core.Dense, self).__init__(trainable=trainable, name=name, **kwargs)
     self.units = units
@@ -150,6 +151,7 @@ class OurDense(layers_core.Dense):
     self.input_spec = base.InputSpec(min_ndim=2)
     self.encoder_states=encoder_states
     self.embedding_encoder=embedding_encoder
+    self.num_units=num_units
 
   def build(self, input_shape):
     input_shape = tensor_shape.TensorShape(input_shape)
@@ -166,7 +168,7 @@ class OurDense(layers_core.Dense):
                                     dtype=self.dtype,
                                     trainable=True)
     self.w_kernel = self.add_variable('w_kernel',
-                                    shape=[self.encoder_states.shape[-1], self.embedding_encoder.shape[-1]],
+                                    shape=[2*self.num_units,self.embedding_encoder.shape[-1]],
                                     initializer=self.kernel_initializer,
                                     regularizer=self.kernel_regularizer,
                                     #constraint=self.kernel_constraint,
@@ -187,25 +189,36 @@ class OurDense(layers_core.Dense):
   def call(self, inputs):
     #ofr i in self.encoder_parts:
 
-    inputs = ops.convert_to_tensor(inputs, dtype=self.dtype)
+    decoder_parts = ops.convert_to_tensor(inputs, dtype=self.dtype)
     encoder_parts= ops.convert_to_tensor(self.encoder_states, dtype=self.dtype)
-    print (encoder_parts, type(encoder_parts), inputs, self.encoder_states)
-    _encoder_shape = encoder_parts.shape
-    _decoder_shape = inputs.shape 
+    #print (encoder_parts, type(encoder_parts), decoder_parts, self.encoder_states)
+    decoder_parts_len = len(decoder_parts.shape.as_list())
+    if (decoder_parts_len == 2):
+      decoder_parts = tf.expand_dims(decoder_parts,0)
 
-    encoder_parts=tf.reshape(encoder_parts,[-1,_encoder_shape[2].value])
-    encoder_parts = tf.matmul(encoder_parts,self.w_kernel)
-    #print (_shape[0]*_shape[1],_shape[2])
-    self.logits_calculated = []
-    decoder_states = tf.unstack(inputs, axis=1)
-    for decoder_state in decoder_states:
-      ed_states = tf.nn.tanh(encoder_parts + tf.expand_dims( tf.matmul(decoder_state, self.kernel) + self._db, dim=1)) #batch, items, emb
-      logits = tf.reshape(tf.nn.xw_plus_b ( tf.reshape(ed_states, [_encoder_shape[0]*_encoder_shape[1], self.embedding_encoder.shape[-1]]),  self.kernel, self.bias), 
-            [_encoder_shape[0], _encoder_shape[1],units])
-    #batch, items, vocab
-    self.logits_calculated.append(tf.reduce_logsumexp(logits, 1))
+    eshape, dshape = tf.shape_n([encoder_parts, decoder_parts])
+    print (dshape, tf.shape(dshape), len(decoder_parts.shape.as_list()))
+    desteps = eshape[0]*dshape[0]
+    print(decoder_parts)
+    d1 = tf.reshape(tf.tile(decoder_parts,[1,1,eshape[0]]), [-1, desteps, dshape[2]])
+    cross_pairs = tf.concat(axis=2, values=[d1, tf.tile(encoder_parts,[dshape[0], 1,1])]) 
 
-    return tf.stack(self.logits_calculated,1)
+    print (cross_pairs, self.kernel, self.bias)
+
+    cross_pairs = tf.reshape(cross_pairs, [eshape[1] , dshape[0], eshape[0] ,dshape[2] + eshape[2]])
+    cross_pairs_reshaped = tf.reshape(cross_pairs, [eshape[1]*dshape[0]*eshape[0] ,dshape[2] + eshape[2]])
+ 
+
+    ed_states = tf.nn.tanh(tf.matmul(cross_pairs_reshaped, self.w_kernel)) #batch*dec_len*enc_len, emb
+    logits = tf.nn.xw_plus_b (ed_states,  self.kernel, self.bias)
+    logits = tf.reshape( logits, [eshape[1] , dshape[0], eshape[0],self.units])
+    #batch, decoder_len, encoder_len, vocab
+    self.logits_calculated = tf.reduce_logsumexp(logits, 2)
+
+    if (decoder_parts_len == 2):
+      self.logits_calculated = tf.squeeze(self.logits_calculated,0)
+
+    return self.logits_calculated
     # inputs = ops.convert_to_tensor(inputs, dtype=self.dtype)
     # shape = inputs.get_shape().as_list()
     # if len(shape) > 2:
@@ -426,10 +439,10 @@ class BaseModel(object):
         with tf.variable_scope("decoder/output_projection"):
           self.output_layer = OurDense(
             hparams.tgt_vocab_size, 
-            use_bias=False, 
             name="output_projection",
             encoder_states=self.encoder_parts,
-            embedding_encoder=self.embedding_encoder)
+            embedding_encoder=self.embedding_encoder,
+            num_units=hparams.num_units)
 
       ## Decoder
       logits, sample_id, final_context_state = self._build_decoder(
