@@ -53,7 +53,7 @@ def add_arguments(parser):
                       default=False,
                       help="Whether to add residual connections.")
   parser.add_argument("--time_major", type="bool", nargs="?", const=True,
-                      default=True,
+                      default=False,
                       help="Whether to use time-major mode for dynamic RNN.")
   parser.add_argument("--num_embeddings_partitions", type=int, default=0,
                       help="Number of partitions for embedding vars.")

@@ -27,6 +27,18 @@ from tensorflow.python.layers import base
 from tensorflow.python.ops import init_ops
 from tensorflow.python.framework import tensor_shape
 from tensorflow.python.framework import ops
+from tensorflow.python.framework import ops
+from tensorflow.python.framework import tensor_shape
+from tensorflow.python.layers import base
+from tensorflow.python.layers import utils
+from tensorflow.python.ops import array_ops
+from tensorflow.python.ops import init_ops
+from tensorflow.python.ops import check_ops
+from tensorflow.python.ops import math_ops
+from tensorflow.python.ops import nn
+from tensorflow.python.ops import standard_ops
+from tensorflow.python.util import nest
+from tensorflow.python.framework import dtypes
 
 from . import model_helper
 from .utils import iterator_utils
@@ -191,51 +203,119 @@ class OurDense(layers_core.Dense):
 
     decoder_parts = ops.convert_to_tensor(inputs, dtype=self.dtype)
     encoder_parts= ops.convert_to_tensor(self.encoder_states, dtype=self.dtype)
-    #print (encoder_parts, type(encoder_parts), decoder_parts, self.encoder_states)
+    # #print (encoder_parts, type(encoder_parts), decoder_parts, self.encoder_states)
     decoder_parts_len = len(decoder_parts.shape.as_list())
-    if (decoder_parts_len == 2):
-      decoder_parts = tf.expand_dims(decoder_parts,0)
+    # if (decoder_parts_len == 2):
+    #   decoder_parts1 = tf.expand_dims(decoder_parts,1)
 
-    eshape, dshape = tf.shape_n([encoder_parts, decoder_parts])
-    print (dshape, tf.shape(dshape), len(decoder_parts.shape.as_list()))
-    desteps = eshape[0]*dshape[0]
-    print(decoder_parts)
-    d1 = tf.reshape(tf.tile(decoder_parts,[1,1,eshape[0]]), [-1, desteps, dshape[2]])
-    cross_pairs = tf.concat(axis=2, values=[d1, tf.tile(encoder_parts,[dshape[0], 1,1])]) 
+    # eshape, dshape = tf.shape_n([encoder_parts, decoder_parts])
+    # print (dshape, tf.shape(dshape), len(decoder_parts.shape.as_list()))
+    # desteps = eshape[1]*dshape[1]
+    # print(decoder_parts)
+
+    # decoder_parts = tf.Print(decoder_parts, [tf.shape(decoder_parts), tf.shape(encoder_parts)], "DEBUG:")
+
+    """
+    d1 = tf.reshape(tf.tile(decoder_parts,[1,1,eshape[1]]), [-1, desteps, dshape[2]])
+    print (d1, tf.tile(encoder_parts,[1, dshape[1],1]))
+    cross_pairs = tf.concat(axis=2, values=[d1, tf.tile(encoder_parts,[1, dshape[1],1])]) 
 
     print (cross_pairs, self.kernel, self.bias)
 
-    cross_pairs = tf.reshape(cross_pairs, [eshape[1] , dshape[0], eshape[0] ,dshape[2] + eshape[2]])
-    cross_pairs_reshaped = tf.reshape(cross_pairs, [eshape[1]*dshape[0]*eshape[0] ,dshape[2] + eshape[2]])
+    cross_pairs = tf.reshape(cross_pairs, [eshape[0] , dshape[1], eshape[1] ,dshape[2] + eshape[2]])
+    cross_pairs_reshaped = tf.reshape(cross_pairs, [eshape[0]*dshape[1]*eshape[1] ,dshape[2] + eshape[2]])
  
 
     ed_states = tf.nn.tanh(tf.matmul(cross_pairs_reshaped, self.w_kernel)) #batch*dec_len*enc_len, emb
     logits = tf.nn.xw_plus_b (ed_states,  self.kernel, self.bias)
-    logits = tf.reshape( logits, [eshape[1] , dshape[0], eshape[0],self.units])
+    logits = tf.reshape( logits, [eshape[0] , dshape[1], eshape[1],self.units])
     #batch, decoder_len, encoder_len, vocab
     self.logits_calculated = tf.reduce_logsumexp(logits, 2)
 
     if (decoder_parts_len == 2):
-      self.logits_calculated = tf.squeeze(self.logits_calculated,0)
+      self.logits_calculated = tf.squeeze(self.logits_calculated,1)
+    """
+    #return self.logits_calculated
+    inputs = ops.convert_to_tensor(inputs, dtype=self.dtype)
+    with tf.control_dependencies([self.encoder_states]):
+      inputs = tf.Print(inputs, [tf.shape(decoder_parts), tf.shape(self.encoder_states)], "DEBUG1_%d_: "% decoder_parts_len )
+    shape = inputs.get_shape().as_list()
+    output_shape = shape[:-1] + [self.units]
+    if len(output_shape) > 2:
+     #if len(shape) > 2:
+     # Broadcasting is required for the inputs.
+     outputs = standard_ops.tensordot(inputs, self.kernel, [[len(shape) - 1],
+                                                            [0]])
+     # Reshape the output back to the original ndim of the input.
+     #if context.in_graph_mode():
+     #  output_shape = shape[:-1] + [self.units]
+     outputs.set_shape(output_shape)
+    else:
+      outputs = standard_ops.matmul(inputs, self.kernel)
+    if self.use_bias:
+      outputs = nn.bias_add(outputs, self.bias)
+    if self.activation is not None:
+      return self.activation(outputs)  # pylint: disable=not-callable
+    return outputs
 
-    return self.logits_calculated
-    # inputs = ops.convert_to_tensor(inputs, dtype=self.dtype)
-    # shape = inputs.get_shape().as_list()
-    # if len(shape) > 2:
-    #   # Broadcasting is required for the inputs.
-    #   outputs = standard_ops.tensordot(inputs, self.kernel, [[len(shape) - 1],
-    #                                                          [0]])
-    #   # Reshape the output back to the original ndim of the input.
-    #   if context.in_graph_mode():
-    #     output_shape = shape[:-1] + [self.units]
-    #     outputs.set_shape(output_shape)
-    # else:
-    #   outputs = standard_ops.matmul(inputs, self.kernel)
-    # if self.use_bias:
-    #   outputs = nn.bias_add(outputs, self.bias)
-    # if self.activation is not None:
-    #   return self.activation(outputs)  # pylint: disable=not-callable
-    # return outputs
+
+def prepare_memory(memory, memory_sequence_length, check_inner_dims_defined):
+  """Convert to tensor and possibly mask `memory`.
+  Args:
+    memory: `Tensor`, shaped `[batch_size, max_time, ...]`.
+    memory_sequence_length: `int32` `Tensor`, shaped `[batch_size]`.
+    check_inner_dims_defined: Python boolean.  If `True`, the `memory`
+      argument's shape is checked to ensure all but the two outermost
+      dimensions are fully defined.
+  Returns:
+    A (possibly masked), checked, new `memory`.
+  Raises:
+    ValueError: If `check_inner_dims_defined` is `True` and not
+      `memory.shape[2:].is_fully_defined()`.
+  """
+  memory = nest.map_structure(
+      lambda m: ops.convert_to_tensor(m, name="memory"), memory)
+  if memory_sequence_length is not None:
+    memory_sequence_length = ops.convert_to_tensor(
+        memory_sequence_length, name="memory_sequence_length")
+  if check_inner_dims_defined:
+    def _check_dims(m):
+      if not m.get_shape()[2:].is_fully_defined():
+        raise ValueError("Expected memory %s to have fully defined inner dims, "
+                         "but saw shape: %s" % (m.name, m.get_shape()))
+    nest.map_structure(_check_dims, memory)
+  if memory_sequence_length is None:
+    seq_len_mask = None
+  else:
+    seq_len_mask = array_ops.sequence_mask(
+        memory_sequence_length,
+        maxlen=array_ops.shape(nest.flatten(memory)[0])[1],
+        dtype=nest.flatten(memory)[0].dtype)
+    seq_len_batch_size = (
+        memory_sequence_length.shape[0].value
+        or array_ops.shape(memory_sequence_length)[0])
+  def _maybe_mask(m, seq_len_mask):
+    rank = m.get_shape().ndims
+    rank = rank if rank is not None else array_ops.rank(m)
+    extra_ones = array_ops.ones(rank - 2, dtype=dtypes.int32)
+    m_batch_size = m.shape[0].value or array_ops.shape(m)[0]
+    if memory_sequence_length is not None:
+      message = ("memory_sequence_length and memory tensor batch sizes do not "
+                 "match.")
+      with ops.control_dependencies([
+          check_ops.assert_equal(
+              seq_len_batch_size, m_batch_size, message=message)]):
+        seq_len_mask = array_ops.reshape(
+            seq_len_mask,
+            array_ops.concat((array_ops.shape(seq_len_mask), extra_ones), 0))
+        return m * seq_len_mask
+    else:
+      return m
+  return nest.map_structure(lambda m: _maybe_mask(m, seq_len_mask), memory)
+
+
+
+
 
 class BaseModel(object):
   """Sequence-to-sequence base class.
@@ -432,21 +512,28 @@ class BaseModel(object):
     with tf.variable_scope(scope or "dynamic_seq2seq", dtype=dtype):
       # Encoder
       encoder_outputs, encoder_state = self._build_encoder(hparams)
+      #print (type(encoder_state), encoder_state , "alala")
+      encoder_outputs = tf.Print(encoder_outputs, [tf.shape(encoder_outputs)], "MODE DEBUG")
       
-      self.encoder_parts=encoder_outputs
+      
+
+      #encoder_outputs
       # Projection
       with tf.variable_scope(scope or "build_network"):
         with tf.variable_scope("decoder/output_projection"):
-          self.output_layer = OurDense(
+          """self.output_layer = OurDense(
             hparams.tgt_vocab_size, 
             name="output_projection",
-            encoder_states=self.encoder_parts,
+            # encoder_states=encoder_outputs,
+            encoder_states=self._values,
             embedding_encoder=self.embedding_encoder,
-            num_units=hparams.num_units)
+            num_units=hparams.num_units)"""
+
+          self.output_layer = layers_core.Dense(hparams.tgt_vocab_size,name="output_projection")
 
       ## Decoder
       logits, sample_id, final_context_state = self._build_decoder(
-          encoder_outputs, encoder_state, hparams)
+          encoder_outputs, encoder_state, hparams, scope=scope)
 
       ## Loss
       if self.mode != tf.contrib.learn.ModeKeys.INFER:
@@ -487,7 +574,7 @@ class BaseModel(object):
         base_gpu=base_gpu,
         single_cell_fn=self.single_cell_fn)
 
-  def _build_decoder(self, encoder_outputs, encoder_state, hparams):
+  def _build_decoder(self, encoder_outputs, encoder_state, hparams, scope=None):
     """Build and run a RNN decoder with a final projection layer.
 
     Args:
@@ -917,7 +1004,7 @@ class Model2(BaseModel):
 
     return tf.concat(bi_outputs, -1), bi_state
 
-  def _build_decoder(self, encoder_outputs, encoder_state, hparams):
+  def _build_decoder(self, encoder_outputs, encoder_state, hparams, scope=None):
     """Build and run a RNN decoder with a final projection layer.
 
     Args:
@@ -938,6 +1025,38 @@ class Model2(BaseModel):
     num_gpus = hparams.num_gpus
 
     iterator = self.iterator
+
+    if self.time_major:
+        memory = tf.transpose(encoder_outputs, [1, 0, 2])
+    else:
+        memory = encoder_outputs
+
+    if self.mode == tf.contrib.learn.ModeKeys.INFER and hparams.beam_width > 0:
+      memory = tf.contrib.seq2seq.tile_batch(
+          memory, multiplier=beam_width)
+      source_sequence_length = tf.contrib.seq2seq.tile_batch(
+          source_sequence_length, multiplier=beam_width)
+      encoder_state = tf.contrib.seq2seq.tile_batch(
+          encoder_state, multiplier=beam_width)
+      batch_size = self.batch_size * beam_width
+    else:
+      batch_size = self.batch_size
+
+    #memory_layer=layers_core.Dense(hparams.num_units, name="memory_layer", use_bias=False)
+    self._values = prepare_memory(memory, self.iterator.source_sequence_length,check_inner_dims_defined=True)
+    #self._keys = (self.memory_layer(self._values) if self.memory_layer  else self._values)
+
+    with tf.variable_scope(scope or "build_network"):
+        with tf.variable_scope("decoder/output_projection"):
+          self.output_layer = OurDense(
+            hparams.tgt_vocab_size, 
+            name="output_projection",
+            # encoder_states=encoder_outputs,
+            encoder_states=self._values,
+            embedding_encoder=self.embedding_encoder,
+            num_units=hparams.num_units)
+
+          #self.output_layer = layers_core.Dense(hparams.tgt_vocab_size,name="output_projection")
 
     # maximum_iteration: The maximum decoding steps.
     if hparams.tgt_max_len_infer:
@@ -974,8 +1093,9 @@ class Model2(BaseModel):
         my_decoder = tf.contrib.seq2seq.BasicDecoder(
             cell,
             helper,
-            decoder_initial_state,
-            output_layer=self.output_layer)
+            decoder_initial_state)
+            #output_layer=self.output_layer
+            #)
 
         # Dynamic decoding
         outputs, final_context_state, _ = tf.contrib.seq2seq.dynamic_decode(

@@ -1,5 +1,5 @@
 # Copyright 2017 Google Inc. All Rights Reserved.
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -18,6 +18,7 @@ from __future__ import division
 from __future__ import print_function
 
 import tensorflow as tf
+
 from . import model
 from . import model_helper
 
@@ -106,12 +107,6 @@ class AttentionModel(model.Model):
     # Only generate alignment in greedy INFER mode.
     alignment_history = (self.mode == tf.contrib.learn.ModeKeys.INFER and
                          beam_width == 0)
-    # cell = tf.contrib.seq2seq.AttentionWrapper(
-    #     cell,
-    #     attention_mechanism,
-    #     attention_layer_size=num_units,
-    #     alignment_history=alignment_history,
-    #     name="attention")
     cell = tf.contrib.seq2seq.AttentionWrapper(
         cell,
         attention_mechanism,
@@ -142,7 +137,10 @@ def create_attention_mechanism(attention_option, num_units, memory,
                                source_sequence_length):
   """Create attention mechanism based on the attention_option."""
   # Mechanism
+  # print ("AM i trult here\nhahahahahahah1 %d"% -1**0.5)
   if attention_option == "luong":
+    print ("AM i trult here\nhahahahahahah")
+    memory = tf.Print(memory, [tf.shape(memory)], "LUONG DEBUG")
     attention_mechanism = tf.contrib.seq2seq.LuongAttention(
         num_units, memory, memory_sequence_length=source_sequence_length)
   elif attention_option == "scaled_luong":
@@ -160,12 +158,6 @@ def create_attention_mechanism(attention_option, num_units, memory,
         memory,
         memory_sequence_length=source_sequence_length,
         normalize=True)
-  # elif attention_option == "joint_attention":
-  #   attention_mechanism = joint_attention.JointAttention(
-  #       num_units,
-  #       memory,
-  #       memory_sequence_length=source_sequence_length,
-  #       normalize=True)
   else:
     raise ValueError("Unknown attention option %s" % attention_option)
 

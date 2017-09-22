@@ -271,9 +271,10 @@ def train(hparams, scope=None, target_session="", single_cell_fn=None):
     steps_per_external_eval = 5 * steps_per_eval
 
   if not hparams.attention:
-    model_creator = nmt_model.Model
-  elif hparams.attention_architecture == "joint":
+    #model_creator = nmt_model.Model
+    #elif hparams.attention_architecture == "joint":
     model_creator = nmt_model.Model2
+    #exit(0)
   elif hparams.attention_architecture == "standard":
     model_creator = attention_model.AttentionModel
   elif hparams.attention_architecture in ["gnmt", "gnmt_v2"]:
@@ -508,9 +509,9 @@ def _sample_decode(model, global_step, sess, hparams, iterator, src_data,
                    tgt_data, iterator_src_placeholder,
                    iterator_batch_size_placeholder, summary_writer):
   """Pick a sentence and decode."""
-  utils.print_out("############: %s" % len(src_data))
   decode_id = random.randint(0, len(src_data) - 1)
   utils.print_out("  # %d" % decode_id)
+
   iterator_feed_dict = {
       iterator_src_placeholder: [src_data[decode_id]],
       iterator_batch_size_placeholder: 1,
