@@ -272,6 +272,7 @@ def train(hparams, scope=None, target_session="", single_cell_fn=None):
 
   if hparams.attention_architecture == "joint":
     model_creator = nmt_model.Model2
+    print ("Here")
   elif not hparams.attention:
     model_creator = nmt_model.Model
   elif hparams.attention_architecture == "standard":
