@@ -323,6 +323,7 @@ class LuongAttention(_BaseAttentionMechanism):
     if probability_fn is None:
       probability_fn = nn_ops.softmax
     wrapped_probability_fn = lambda score, _: probability_fn(score)
+    
     super(LuongAttention, self).__init__(
         query_layer=None,
         memory_layer=layers_core.Dense(

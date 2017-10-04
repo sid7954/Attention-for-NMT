@@ -139,7 +139,7 @@ def create_attention_mechanism(attention_option, num_units, memory,
   # Mechanism
   # print ("AM i trult here\nhahahahahahah1 %d"% -1**0.5)
   if attention_option == "luong":
-    #print ("AM i trult here\nhahahahahahah")
+    print("LUONG USED &&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
     #memory = tf.Print(memory, [tf.shape(memory)], "LUONG DEBUG")
     attention_mechanism = tf.contrib.seq2seq.LuongAttention(
         num_units, memory, memory_sequence_length=source_sequence_length)

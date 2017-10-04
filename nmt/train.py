@@ -271,12 +271,13 @@ def train(hparams, scope=None, target_session="", single_cell_fn=None):
     steps_per_external_eval = 5 * steps_per_eval
 
   if hparams.attention_architecture == "joint":
-    model_creator = nmt_model.Model2
     print ("Here")
+    model_creator = nmt_model.Model2
   elif not hparams.attention:
     model_creator = nmt_model.Model
   elif hparams.attention_architecture == "standard":
     model_creator = attention_model.AttentionModel
+    print("Yooo")
   elif hparams.attention_architecture in ["gnmt", "gnmt_v2"]:
     model_creator = gnmt_model.GNMTModel
   else:

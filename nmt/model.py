@@ -118,6 +118,7 @@ class OurDense(layers_core.Dense):
                embedding_encoder=None,
                num_units=None,
                **kwargs):
+    print("USED############# 0 ############")
     super(layers_core.Dense, self).__init__(trainable=trainable, name=name, **kwargs)
     self.units = units
     self.activation = activation
@@ -134,28 +135,30 @@ class OurDense(layers_core.Dense):
     self.encoder_states= ops.convert_to_tensor(self.encoder_states, dtype=self.dtype)
     self.embedding_encoder=embedding_encoder
     self.num_units=num_units
+    print ("Num units is ", num_units, units)
 
   def build(self, input_shape):
+    print("USED############# 1 ############")
     input_shape = tensor_shape.TensorShape(input_shape)
     if input_shape[-1].value is None:
       raise ValueError('The last dimension of the inputs to `Dense` '
                        'should be defined. Found `None`.')
     self.input_spec = base.InputSpec(min_ndim=2,
                                      axes={-1: input_shape[-1].value})
-    self.kernel = self.add_variable('kernel',
-                                    shape=[input_shape[-1].value, self.units],
-                                    initializer=self.kernel_initializer,
-                                    regularizer=self.kernel_regularizer,
-                                    #constraint=self.kernel_constraint,
-                                    dtype=self.dtype,
-                                    trainable=True)
-    self.w_kernel = self.add_variable('w_kernel',
-                                    shape=[2*self.num_units,self.embedding_encoder.shape[-1]],
-                                    initializer=self.kernel_initializer,
-                                    regularizer=self.kernel_regularizer,
-                                    #constraint=self.kernel_constraint,
-                                    dtype=self.dtype,
-                                    trainable=True)
+    # self.kernel = self.add_variable('kernel',
+    #                                 shape=[input_shape[-1].value, self.units],
+    #                                 initializer=self.kernel_initializer,
+    #                                 regularizer=self.kernel_regularizer,
+    #                                 #constraint=self.kernel_constraint,
+    #                                 dtype=self.dtype,
+    #                                 trainable=True)
+    # self.w_kernel = self.add_variable('w_kernel',
+    #                                 shape=[2*self.num_units,self.embedding_encoder.shape[-1]],
+    #                                 initializer=self.kernel_initializer,
+    #                                 regularizer=self.kernel_regularizer,
+    #                                 #constraint=self.kernel_constraint,
+    #                                 dtype=self.dtype,
+    #                                 trainable=True)
     self.eW_kernel = self.add_variable('eW_kernel',
                                     shape=[self.num_units,self.embedding_encoder.shape[-1]],
                                     initializer=self.kernel_initializer,
@@ -170,7 +173,41 @@ class OurDense(layers_core.Dense):
                                     #constraint=self.kernel_constraint,
                                     dtype=self.dtype,
                                     trainable=True)
-
+    self.yW_kernel = self.add_variable('yW_kernel',
+                                    shape=[self.embedding_encoder.shape[-1],self.units],
+                                    initializer=self.kernel_initializer,
+                                    regularizer=self.kernel_regularizer,
+                                    #constraint=self.kernel_constraint,
+                                    dtype=self.dtype,
+                                    trainable=True)
+    self.W1_kernel = self.add_variable('W1_kernel',
+                                    shape=[self.embedding_encoder.shape[-1],self.embedding_encoder.shape[-1].value/2],
+                                    initializer=self.kernel_initializer,
+                                    regularizer=self.kernel_regularizer,
+                                    #constraint=self.kernel_constraint,
+                                    dtype=self.dtype,
+                                    trainable=True)
+    self.W1_bias = self.add_variable('W1_bias',
+                                    shape=[self.embedding_encoder.shape[-1].value/2],
+                                    initializer=self.bias_initializer,
+                                    regularizer=self.bias_regularizer,
+                                    #constraint=self.bias_constraint,
+                                    dtype=self.dtype,
+                                    trainable=True)
+    self.W2_kernel = self.add_variable('W2_kernel',
+                                    shape=[self.embedding_encoder.shape[-1].value/2,1],
+                                    initializer=self.kernel_initializer,
+                                    regularizer=self.kernel_regularizer,
+                                    #constraint=self.kernel_constraint,
+                                    dtype=self.dtype,
+                                    trainable=True)
+    self.W2_bias = self.add_variable('W2_bias',
+                                    shape=[1],
+                                    initializer=self.bias_initializer,
+                                    regularizer=self.bias_regularizer,
+                                    #constraint=self.bias_constraint,
+                                    dtype=self.dtype,
+                                    trainable=True)
     self.at_bias = self.add_variable('at_bias',
                                     shape=[self.embedding_encoder.shape[-1]],
                                     initializer=self.bias_initializer,
@@ -178,20 +215,20 @@ class OurDense(layers_core.Dense):
                                     #constraint=self.bias_constraint,
                                     dtype=self.dtype,
                                     trainable=True)
-    if self.use_bias:
-      self.bias = self.add_variable('bias',
-                                    shape=[self.units,],
-                                    initializer=self.bias_initializer,
-                                    regularizer=self.bias_regularizer,
-                                    #constraint=self.bias_constraint,
-                                    dtype=self.dtype,
-                                    trainable=True)
-    else:
-      self.bias = None
+    # if self.use_bias:
+    #   self.bias = self.add_variable('bias',
+    #                                 shape=[self.units,],
+    #                                 initializer=self.bias_initializer,
+    #                                 regularizer=self.bias_regularizer,
+    #                                 #constraint=self.bias_constraint,
+    #                                 dtype=self.dtype,
+    #                                 trainable=True)
+    # else:
+    #   self.bias = None
     self.built = True
 
   def call(self, inputs):
-
+    print("USED############# 2 ############")
     decoder_parts = ops.convert_to_tensor(inputs, dtype=self.dtype)
     encoder_parts = self.encoder_states
     decoder_parts_len = len(decoder_parts.shape.as_list())
@@ -200,78 +237,81 @@ class OurDense(layers_core.Dense):
     encoder_parts = tf.matmul(encoder_parts, self.eW_kernel)
     encoder_parts = tf.reshape(encoder_parts,[eshape[0],eshape[1],-1])
 
-    combined_states = tf.nn.tanh(encoder_parts + tf.expand_dims( tf.matmul(decoder_parts, self.dW_kernel) + self.at_bias, dim=1)) #batch, items, emb
-    logits = tf.reshape(tf.nn.xw_plus_b ( tf.reshape(combined_states, [ -1 , self.embedding_encoder.shape[-1].value]),  self.kernel, self.bias),
-              [eshape[0], eshape[1], self.units])
-    #batch, items, vocab
+    
+    combined_states=tf.nn.tanh(tf.reshape(encoder_parts + tf.expand_dims( tf.matmul(decoder_parts, self.dW_kernel) + self.at_bias, dim=1),[-1,eshape[1], self.embedding_encoder.shape[-1].value, 1]) + self.yW_kernel) #batch, items, emb, vocab
+    
+    #W,b tanh(batch, items, emb/2 , vocab [emb,emb/2]
+    temp=tf.nn.tanh(tf.nn.xw_plus_b(tf.reshape(tf.transpose(combined_states, perm=[0,1,3,2]),[-1 , self.embedding_encoder.shape[-1].value]),self.W1_kernel,self.W1_bias)) #batch x items x vocab, emb/2
+    #W,b tanh(batch, items, 1, vocab [emb/2 , 1]
+    temp=tf.nn.xw_plus_b(temp,self.W2_kernel,self.W2_bias) #batch x items x vocab, 1
 
+    logits=tf.reshape(temp,[eshape[0], eshape[1], self.units]) #batch, items, vocab
     logits = tf.reduce_logsumexp(logits, 1)
     return logits
 
 
+  # def call_orig(self, inputs):
+  #   #ofr i in self.encoder_parts:
+  #   print("USED############# 3 ############")
+  #   decoder_parts = ops.convert_to_tensor(inputs, dtype=self.dtype)
+  #   encoder_parts= ops.convert_to_tensor(self.encoder_states, dtype=self.dtype)
+  #   # #print (encoder_parts, type(encoder_parts), decoder_parts, self.encoder_states)
+  #   decoder_parts_len = len(decoder_parts.shape.as_list())
+  #   if (decoder_parts_len == 2):
+  #     decoder_parts = tf.expand_dims(decoder_parts,1)
 
-  def call_orig(self, inputs):
-    #ofr i in self.encoder_parts:
+  #   eshape, dshape = tf.shape_n([encoder_parts, decoder_parts])
+  #   print (dshape, tf.shape(dshape), len(decoder_parts.shape.as_list()))
+  #   desteps = eshape[1]*dshape[1]
+  #   print(decoder_parts)
 
-    decoder_parts = ops.convert_to_tensor(inputs, dtype=self.dtype)
-    encoder_parts= ops.convert_to_tensor(self.encoder_states, dtype=self.dtype)
-    # #print (encoder_parts, type(encoder_parts), decoder_parts, self.encoder_states)
-    decoder_parts_len = len(decoder_parts.shape.as_list())
-    if (decoder_parts_len == 2):
-      decoder_parts = tf.expand_dims(decoder_parts,1)
+  #   #decoder_parts = tf.Print(decoder_parts, [tf.shape(decoder_parts), tf.shape(encoder_parts)], "DEBUG:")
 
-    eshape, dshape = tf.shape_n([encoder_parts, decoder_parts])
-    print (dshape, tf.shape(dshape), len(decoder_parts.shape.as_list()))
-    desteps = eshape[1]*dshape[1]
-    print(decoder_parts)
-
-    #decoder_parts = tf.Print(decoder_parts, [tf.shape(decoder_parts), tf.shape(encoder_parts)], "DEBUG:")
-
-    #inputs = ops.convert_to_tensor(inputs, dtype=self.dtype)
-    with tf.control_dependencies([self.encoder_states]):
-      decoder_parts = (tf.Print(decoder_parts, [tf.shape(decoder_parts), tf.shape(encoder_parts)], "DEBUG1_%d_: "% decoder_parts_len ))
+  #   #inputs = ops.convert_to_tensor(inputs, dtype=self.dtype)
+  #   with tf.control_dependencies([self.encoder_states]):
+  #     decoder_parts = (tf.Print(decoder_parts, [tf.shape(decoder_parts), tf.shape(encoder_parts)], "DEBUG1_%d_: "% decoder_parts_len ))
     
-    d1 = tf.reshape(tf.tile(decoder_parts,[1,1,eshape[1]]), [-1, desteps, dshape[2]])
-    print (d1, tf.tile(encoder_parts,[1, dshape[1],1]))
-    cross_pairs = tf.concat(axis=2, values=[d1, tf.tile(encoder_parts,[1, dshape[1],1])]) 
+  #   d1 = tf.reshape(tf.tile(decoder_parts,[1,1,eshape[1]]), [-1, desteps, dshape[2]])
+  #   print (d1, tf.tile(encoder_parts,[1, dshape[1],1]))
+  #   cross_pairs = tf.concat(axis=2, values=[d1, tf.tile(encoder_parts,[1, dshape[1],1])]) 
 
-    print (cross_pairs, self.kernel, self.bias)
+  #   print (cross_pairs, self.kernel, self.bias)
 
-    cross_pairs = tf.reshape(cross_pairs, [eshape[0] , dshape[1], eshape[1] ,dshape[2] + eshape[2]])
-    cross_pairs_reshaped = tf.reshape(cross_pairs, [eshape[0]*dshape[1]*eshape[1] ,dshape[2] + eshape[2]])
+  #   cross_pairs = tf.reshape(cross_pairs, [eshape[0] , dshape[1], eshape[1] ,dshape[2] + eshape[2]])
+  #   cross_pairs_reshaped = tf.reshape(cross_pairs, [eshape[0]*dshape[1]*eshape[1] ,dshape[2] + eshape[2]])
  
 
-    ed_states = tf.nn.tanh(tf.matmul(cross_pairs_reshaped, self.w_kernel)) #batch*dec_len*enc_len, emb
-    logits = tf.nn.xw_plus_b (ed_states,  self.kernel, self.bias)
-    logits = tf.reshape( logits, [eshape[0] , dshape[1], eshape[1],self.units])
-    #batch, decoder_len, encoder_len, vocab
-    self.logits_calculated = tf.reduce_logsumexp(logits, 2)
+  #   ed_states = tf.nn.tanh(tf.matmul(cross_pairs_reshaped, self.w_kernel)) #batch*dec_len*enc_len, emb
+  #   logits = tf.nn.xw_plus_b (ed_states,  self.kernel, self.bias)
+  #   logits = tf.reshape( logits, [eshape[0] , dshape[1], eshape[1],self.units])
+  #   #batch, decoder_len, encoder_len, vocab
+  #   self.logits_calculated = tf.reduce_logsumexp(logits, 2)
 
-    if (decoder_parts_len == 2):
-      self.logits_calculated = tf.squeeze(self.logits_calculated,1)
+  #   if (decoder_parts_len == 2):
+  #     self.logits_calculated = tf.squeeze(self.logits_calculated,1)
     
-    return self.logits_calculated
-    """inputs = ops.convert_to_tensor(inputs, dtype=self.dtype)
-    with tf.control_dependencies([self.encoder_states]):
-      inputs = (tf.Print(inputs, [tf.shape(decoder_parts), tf.shape(encoder_parts)], "DEBUG1_%d_: "% decoder_parts_len ))
-    shape = inputs.get_shape().as_list()
-    output_shape = shape[:-1] + [self.units]
-    if len(output_shape) > 2:
-     #if len(shape) > 2:
-     # Broadcasting is required for the inputs.
-     outputs = standard_ops.tensordot(inputs, self.kernel, [[len(shape) - 1],
-                                                            [0]])
-     # Reshape the output back to the original ndim of the input.
-     #if context.in_graph_mode():
-     #  output_shape = shape[:-1] + [self.units]
-     outputs.set_shape(output_shape)
-    else:
-      outputs = standard_ops.matmul(inputs, self.kernel)
-    if self.use_bias:
-      outputs = nn.bias_add(outputs, self.bias)
-    if self.activation is not None:
-      return self.activation(outputs)  # pylint: disable=not-callable
-    return outputs"""
+  #   return self.logits_calculated
+  #   """inputs = ops.convert_to_tensor(inputs, dtype=self.dtype)
+  #   with tf.control_dependencies([self.encoder_states]):
+  #     inputs = (tf.Print(inputs, [tf.shape(decoder_parts), tf.shape(encoder_parts)], "DEBUG1_%d_: "% decoder_parts_len ))
+  #   shape = inputs.get_shape().as_list()
+  #   output_shape = shape[:-1] + [self.units]
+  #   if len(output_shape) > 2:
+  #    #if len(shape) > 2:
+  #    # Broadcasting is required for the inputs.
+  #    outputs = standard_ops.tensordot(inputs, self.kernel, [[len(shape) - 1],
+  #                                                           [0]])
+  #    # Reshape the output back to the original ndim of the input.
+  #    #if context.in_graph_mode():
+  #    #  output_shape = shape[:-1] + [self.units]
+  #    outputs.set_shape(output_shape)
+  #   else:
+  #     outputs = standard_ops.matmul(inputs, self.kernel)
+  #   if self.use_bias:
+  #     outputs = nn.bias_add(outputs, self.bias)
+  #   if self.activation is not None:
+  #     return self.activation(outputs)  # pylint: disable=not-callable
+  #   return outputs"""
 
 
 
@@ -1018,11 +1058,12 @@ class Model2(BaseModel):
             time_major=self.time_major)
 
         # Decoder
+        print("DECODER USED &&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
         my_decoder = tf.contrib.seq2seq.BasicDecoder(
             cell,
             helper,
             decoder_initial_state,
-	    output_layer=self.output_layer
+            output_layer=self.output_layer
 	    )
 
         # Dynamic decoding
