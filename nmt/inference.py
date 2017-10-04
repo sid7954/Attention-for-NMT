@@ -124,7 +124,7 @@ def _decode_inference_indices(model, sess, output_infer,
 def load_data(inference_input_file, hparams=None):
   """Load inference data."""
   with codecs.getreader("utf-8")(
-      tf.gfile.GFile(inference_input_file, mode="rb")) as f:
+      tf.gfile.GFile(inference_input_file, mode="r")) as f:
     inference_data = f.read().splitlines()
 
   if hparams and hparams.inference_indices:
