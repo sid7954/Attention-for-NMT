@@ -48,8 +48,133 @@ utils.check_tensorflow_version()
 
 __all__ = ["BaseModel", "Model"]
 
+'''
+BASELINE OUTPUT DENSE LAYER 
+which is proivided to decoder (Basic as well as BeamSearch Decoder) as argument
 
+classs Dense(base.Layer):
+  """Densely-connected layer class.
+  This layer implements the operation:
+  `outputs = activation(inputs.kernel + bias)`
+  Where `activation` is the activation function passed as the `activation`
+  argument (if not `None`), `kernel` is a weights matrix created by the layer,
+  and `bias` is a bias vector created by the layer
+  (only if `use_bias` is `True`).
+  Note: if the input to the layer has a rank greater than 2, then it is
+  flattened prior to the initial matrix multiply by `kernel`.
+  Arguments:
+    units: Integer or Long, dimensionality of the output space.
+    activation: Activation function (callable). Set it to None to maintain a
+      linear activation.
+    use_bias: Boolean, whether the layer uses a bias.
+    kernel_initializer: Initializer function for the weight matrix.
+      If `None` (default), weights are initialized using the default
+      initializer used by `tf.get_variable`.
+    bias_initializer: Initializer function for the bias.
+    kernel_regularizer: Regularizer function for the weight matrix.
+    bias_regularizer: Regularizer function for the bias.
+    activity_regularizer: Regularizer function for the output.
+    kernel_constraint: An optional projection function to be applied to the
+        kernel after being updated by an `Optimizer` (e.g. used to implement
+        norm constraints or value constraints for layer weights). The function
+        must take as input the unprojected variable and must return the
+        projected variable (which must have the same shape). Constraints are
+        not safe to use when doing asynchronous distributed training.
+    bias_constraint: An optional projection function to be applied to the
+        bias after being updated by an `Optimizer`.
+    trainable: Boolean, if `True` also add variables to the graph collection
+      `GraphKeys.TRAINABLE_VARIABLES` (see `tf.Variable`).
+    name: String, the name of the layer. Layers with the same name will
+      share weights, but to avoid mistakes we require reuse=True in such cases.
+    reuse: Boolean, whether to reuse the weights of a previous layer
+      by the same name.
+  Properties:
+    units: Python integer, dimensionality of the output space.
+    activation: Activation function (callable).
+    use_bias: Boolean, whether the layer uses a bias.
+    kernel_initializer: Initializer instance (or name) for the kernel matrix.
+    bias_initializer: Initializer instance (or name) for the bias.
+    kernel_regularizer: Regularizer instance for the kernel matrix (callable)
+    bias_regularizer: Regularizer instance for the bias (callable).
+    activity_regularizer: Regularizer instance for the output (callable)
+    kernel_constraint: Constraint function for the kernel matrix.
+    bias_constraint: Constraint function for the bias.
+    kernel: Weight matrix (TensorFlow variable or tensor).
+    bias: Bias vector, if applicable (TensorFlow variable or tensor).
+  """
 
+  def __init__(self, units,
+               activation=None,
+               use_bias=True,
+               kernel_initializer=None,
+               bias_initializer=init_ops.zeros_initializer(),
+               kernel_regularizer=None,
+               bias_regularizer=None,
+               activity_regularizer=None,
+               kernel_constraint=None,
+               bias_constraint=None,
+               trainable=True,
+               name=None,
+               **kwargs):
+    super(Dense, self).__init__(trainable=trainable, name=name,
+                                activity_regularizer=activity_regularizer,
+                                **kwargs)
+    self.units = units
+    self.activation = activation
+    self.use_bias = use_bias
+    self.kernel_initializer = kernel_initializer
+    self.bias_initializer = bias_initializer
+    self.kernel_regularizer = kernel_regularizer
+    self.bias_regularizer = bias_regularizer
+    self.kernel_constraint = kernel_constraint
+    self.bias_constraint = bias_constraint
+    self.input_spec = base.InputSpec(min_ndim=2)
+
+  def build(self, input_shape):
+    input_shape = tensor_shape.TensorShape(input_shape)
+    if input_shape[-1].value is None:
+      raise ValueError('The last dimension of the inputs to `Dense` '
+                       'should be defined. Found `None`.')
+    self.input_spec = base.InputSpec(min_ndim=2,
+                                     axes={-1: input_shape[-1].value})
+    self.kernel = self.add_variable('kernel',
+                                    shape=[input_shape[-1].value, self.units],
+                                    initializer=self.kernel_initializer,
+                                    regularizer=self.kernel_regularizer,
+                                    constraint=self.kernel_constraint,
+                                    dtype=self.dtype,
+                                    trainable=True)
+    if self.use_bias:
+      self.bias = self.add_variable('bias',
+                                    shape=[self.units,],
+                                    initializer=self.bias_initializer,
+                                    regularizer=self.bias_regularizer,
+                                    constraint=self.bias_constraint,
+                                    dtype=self.dtype,
+                                    trainable=True)
+    else:
+      self.bias = None
+    self.built = True
+
+  def call(self, inputs):
+    inputs = ops.convert_to_tensor(inputs, dtype=self.dtype)
+    shape = inputs.get_shape().as_list()
+    if len(shape) > 2:
+      # Broadcasting is required for the inputs.
+      outputs = standard_ops.tensordot(inputs, self.kernel, [[len(shape) - 1],
+                                                             [0]])
+      # Reshape the output back to the original ndim of the input.
+      if context.in_graph_mode():
+        output_shape = shape[:-1] + [self.units]
+        outputs.set_shape(output_shape)
+    else:
+      outputs = standard_ops.matmul(inputs, self.kernel)
+    if self.use_bias:
+      outputs = nn.bias_add(outputs, self.bias)
+    if self.activation is not None:
+      return self.activation(outputs)  # pylint: disable=not-callable
+    return outputs
+'''
 
 class OurDense(layers_core.Dense):
   """Densely-connected layer class.
@@ -118,9 +243,8 @@ class OurDense(layers_core.Dense):
                embedding_encoder=None,
                num_units=None,
                **kwargs):
-    print("USED############# 0 ############")
     super(layers_core.Dense, self).__init__(trainable=trainable, name=name, **kwargs)
-    self.units = units
+    self.units = units  #Vocab_Size
     self.activation = activation
     self.use_bias = use_bias
     self.kernel_initializer = kernel_initializer
@@ -133,32 +257,17 @@ class OurDense(layers_core.Dense):
     self.input_spec = base.InputSpec(min_ndim=2)
     self.encoder_states= encoder_states
     self.encoder_states= ops.convert_to_tensor(self.encoder_states, dtype=self.dtype)
-    self.embedding_encoder=embedding_encoder
-    self.num_units=num_units
-    print ("Num units is ", num_units, units)
+    self.embedding_encoder=embedding_encoder #Embedding
+    self.num_units=num_units #Batchsize
 
   def build(self, input_shape):
-    print("USED############# 1 ############")
     input_shape = tensor_shape.TensorShape(input_shape)
     if input_shape[-1].value is None:
       raise ValueError('The last dimension of the inputs to `Dense` '
                        'should be defined. Found `None`.')
     self.input_spec = base.InputSpec(min_ndim=2,
                                      axes={-1: input_shape[-1].value})
-    # self.kernel = self.add_variable('kernel',
-    #                                 shape=[input_shape[-1].value, self.units],
-    #                                 initializer=self.kernel_initializer,
-    #                                 regularizer=self.kernel_regularizer,
-    #                                 #constraint=self.kernel_constraint,
-    #                                 dtype=self.dtype,
-    #                                 trainable=True)
-    # self.w_kernel = self.add_variable('w_kernel',
-    #                                 shape=[2*self.num_units,self.embedding_encoder.shape[-1]],
-    #                                 initializer=self.kernel_initializer,
-    #                                 regularizer=self.kernel_regularizer,
-    #                                 #constraint=self.kernel_constraint,
-    #                                 dtype=self.dtype,
-    #                                 trainable=True)
+    #Kernel for encoder states e_i's
     self.eW_kernel = self.add_variable('eW_kernel',
                                     shape=[self.num_units,self.embedding_encoder.shape[-1]],
                                     initializer=self.kernel_initializer,
@@ -166,6 +275,7 @@ class OurDense(layers_core.Dense):
                                     #constraint=self.kernel_constraint,
                                     dtype=self.dtype,
                                     trainable=True)
+    #Kernel for decoder state d_j
     self.dW_kernel = self.add_variable('dW_kernel',
                                     shape=[self.num_units,self.embedding_encoder.shape[-1]],
                                     initializer=self.kernel_initializer,
@@ -173,6 +283,8 @@ class OurDense(layers_core.Dense):
                                     #constraint=self.kernel_constraint,
                                     dtype=self.dtype,
                                     trainable=True)
+    #Kernel for incorporating the vocab in the score calculation
+    #Has dimensions : [embedding, vocab_size]
     self.yW_kernel = self.add_variable('yW_kernel',
                                     shape=[self.embedding_encoder.shape[-1],self.units],
                                     initializer=self.kernel_initializer,
@@ -180,6 +292,7 @@ class OurDense(layers_core.Dense):
                                     #constraint=self.kernel_constraint,
                                     dtype=self.dtype,
                                     trainable=True)
+    #Transformation Kernel 1
     self.W1_kernel = self.add_variable('W1_kernel',
                                     shape=[self.embedding_encoder.shape[-1],self.embedding_encoder.shape[-1].value/2],
                                     initializer=self.kernel_initializer,
@@ -187,6 +300,7 @@ class OurDense(layers_core.Dense):
                                     #constraint=self.kernel_constraint,
                                     dtype=self.dtype,
                                     trainable=True)
+    #Transformation Bias 1
     self.W1_bias = self.add_variable('W1_bias',
                                     shape=[self.embedding_encoder.shape[-1].value/2],
                                     initializer=self.bias_initializer,
@@ -194,6 +308,7 @@ class OurDense(layers_core.Dense):
                                     #constraint=self.bias_constraint,
                                     dtype=self.dtype,
                                     trainable=True)
+    #Transformation Kernel 2
     self.W2_kernel = self.add_variable('W2_kernel',
                                     shape=[self.embedding_encoder.shape[-1].value/2,1],
                                     initializer=self.kernel_initializer,
@@ -201,6 +316,7 @@ class OurDense(layers_core.Dense):
                                     #constraint=self.kernel_constraint,
                                     dtype=self.dtype,
                                     trainable=True)
+    #Transformation Bias 2
     self.W2_bias = self.add_variable('W2_bias',
                                     shape=[1],
                                     initializer=self.bias_initializer,
@@ -208,6 +324,7 @@ class OurDense(layers_core.Dense):
                                     #constraint=self.bias_constraint,
                                     dtype=self.dtype,
                                     trainable=True)
+    #Bias when combining encoder and decoder states
     self.at_bias = self.add_variable('at_bias',
                                     shape=[self.embedding_encoder.shape[-1]],
                                     initializer=self.bias_initializer,
@@ -215,38 +332,39 @@ class OurDense(layers_core.Dense):
                                     #constraint=self.bias_constraint,
                                     dtype=self.dtype,
                                     trainable=True)
-    # if self.use_bias:
-    #   self.bias = self.add_variable('bias',
-    #                                 shape=[self.units,],
-    #                                 initializer=self.bias_initializer,
-    #                                 regularizer=self.bias_regularizer,
-    #                                 #constraint=self.bias_constraint,
-    #                                 dtype=self.dtype,
-    #                                 trainable=True)
-    # else:
-    #   self.bias = None
     self.built = True
 
   def call(self, inputs):
-    print("USED############# 2 ############")
     decoder_parts = ops.convert_to_tensor(inputs, dtype=self.dtype)
     encoder_parts = self.encoder_states
     decoder_parts_len = len(decoder_parts.shape.as_list())
-    eshape, dshape = tf.shape_n([encoder_parts, decoder_parts])
+    eshape, dshape = tf.shape_n([encoder_parts, decoder_parts])       
+    #eshape[0]: batchsize
+    #eshape[1]: encoder states (items)
+    #eshape[2]: num_units (LSTM units)
     encoder_parts = tf.reshape(encoder_parts, [eshape[0]*eshape[1],eshape[2]])
-    encoder_parts = tf.matmul(encoder_parts, self.eW_kernel)
+    encoder_parts = tf.matmul(encoder_parts, self.eW_kernel) # eW * e_i
     encoder_parts = tf.reshape(encoder_parts,[eshape[0],eshape[1],-1])
 
+    # tanh( eW * e_i + dW * d_j + at_bias + yW ) : here yW is incorporating the vocab 
+    # self.embedding_encoder.shape[-1].value   : embedding size
+    # self.units : vocab_size
+    # Dimensions of combined_states: batchsize, items, embedding, vocab_size
+    combined_states=tf.nn.tanh(tf.reshape(encoder_parts + tf.expand_dims( tf.matmul(decoder_parts, self.dW_kernel) + self.at_bias, dim=1),[-1,eshape[1], self.embedding_encoder.shape[-1].value, 1]) + self.yW_kernel) 
     
-    combined_states=tf.nn.tanh(tf.reshape(encoder_parts + tf.expand_dims( tf.matmul(decoder_parts, self.dW_kernel) + self.at_bias, dim=1),[-1,eshape[1], self.embedding_encoder.shape[-1].value, 1]) + self.yW_kernel) #batch, items, emb, vocab
-    
-    #W,b tanh(batch, items, emb/2 , vocab [emb,emb/2]
-    temp=tf.nn.tanh(tf.nn.xw_plus_b(tf.reshape(tf.transpose(combined_states, perm=[0,1,3,2]),[-1 , self.embedding_encoder.shape[-1].value]),self.W1_kernel,self.W1_bias)) #batch x items x vocab, emb/2
-    #W,b tanh(batch, items, 1, vocab [emb/2 , 1]
-    temp=tf.nn.xw_plus_b(temp,self.W2_kernel,self.W2_bias) #batch x items x vocab, 1
+    #Tranformation to reduce dimensionality from [batchsize, items, embedding, vocab_size] to [batchsize, items, 1, vocab_size] in 2 steps
 
-    logits=tf.reshape(temp,[eshape[0], eshape[1], self.units]) #batch, items, vocab
-    logits = tf.reduce_logsumexp(logits, 1)
+    #Transposing to [batchsize, items, vocab_size, embedding] and then using a kernel of dimensions [embedding, embedding/2] and a bias of dimensions [embedding/2]
+    #temp : dim [batchsize, items, vocab_size, embedding/2]
+    temp=tf.nn.tanh(tf.nn.xw_plus_b(tf.reshape(tf.transpose(combined_states, perm=[0,1,3,2]),[-1 , self.embedding_encoder.shape[-1].value]),self.W1_kernel,self.W1_bias)) #batch x items x vocab, emb/2
+    
+    #Using a kernel of dimensions [embedding/2, 1] and a bias of dimensions [1]
+    #temp : dim [batchsize, items,vocab_size, 1]
+    temp=tf.nn.xw_plus_b(temp,self.W2_kernel,self.W2_bias) # [batch x items x vocab_size, 1]
+
+    logits=tf.reshape(temp,[eshape[0], eshape[1], self.units]) #[batch, items, vocab_size]
+    
+    logits = tf.reduce_logsumexp(logits, 1) #Summing up over items (encoder states)
     return logits
 
 
@@ -312,9 +430,6 @@ class OurDense(layers_core.Dense):
   #   if self.activation is not None:
   #     return self.activation(outputs)  # pylint: disable=not-callable
   #   return outputs"""
-
-
-
 
 
 
