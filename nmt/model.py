@@ -335,12 +335,30 @@ class OurDense(layers_core.Dense):
     self.built = True
 
   def call(self, inputs):
+    encoder_parts = self.encoder_states #batch, items, dim
+    eshape=encoder_parts.get_shape().as_list()
+    new_encoder_parts=encoder_parts
+    l=2
+    for i in range(eshape[1]-l,eshape[1]-1):
+      temp_add=tf.slice(encoder_parts,[0,0,0],[eshape[0],i+1,eshape[2]])
+      for j in range(1,eshape[1]-i):
+        temp_e=tf.slice(encoder_parts,[0,j,0],[eshape[0],i+1,eshape[2]])
+        print(temp_e)
+        temp_add=tf.add(temp_add,temp_e)
+      if(i==eshape[1]-l):
+        new_encoder_parts=temp_add
+      else: 
+        new_encoder_parts=tf.concat([temp_add, new_encoder_parts],1)
+    if not(l==1):
+      encoder_parts=tf.concat([encoder_parts,new_encoder_parts],1)
+    else:
+      encoder_parts=new_encoder_parts
+
     decoder_parts = ops.convert_to_tensor(inputs, dtype=self.dtype)
-    encoder_parts = self.encoder_states
     decoder_parts_len = len(decoder_parts.shape.as_list())
     eshape, dshape = tf.shape_n([encoder_parts, decoder_parts])       
     #eshape[0]: batchsize
-    #eshape[1]: encoder states (items)
+    #eshape[1]: encoder states ?  (items)
     #eshape[2]: num_units (LSTM units)
     encoder_parts = tf.reshape(encoder_parts, [eshape[0]*eshape[1],eshape[2]])
     encoder_parts = tf.matmul(encoder_parts, self.eW_kernel) # eW * e_i
