@@ -338,22 +338,31 @@ class OurDense(layers_core.Dense):
     encoder_parts = self.encoder_states #batch, items, dim
     eshape=encoder_parts.get_shape().as_list()
     new_encoder_parts=encoder_parts
-    l=2
-    for i in range(eshape[1]-l,eshape[1]-1):
-      temp_add=tf.slice(encoder_parts,[0,0,0],[eshape[0],i+1,eshape[2]])
-      for j in range(1,eshape[1]-i):
-        temp_e=tf.slice(encoder_parts,[0,j,0],[eshape[0],i+1,eshape[2]])
-        print(temp_e)
-        temp_add=tf.add(temp_add,temp_e)
-      if(i==eshape[1]-l):
-        new_encoder_parts=temp_add
-      else: 
-        new_encoder_parts=tf.concat([temp_add, new_encoder_parts],1)
-    if not(l==1):
-      encoder_parts=tf.concat([encoder_parts,new_encoder_parts],1)
-    else:
-      encoder_parts=new_encoder_parts
+    l=4
+    # a=tf.range(0, eshape[1],delta=1, dtype=None, name='range')
+    enc=tf.reshape(ops.convert_to_tensor(encoder_parts, dtype=self.dtype),[eshape[0],eshape[1],eshape[2],1])
+    print("123456789987654321")
+    # for i in range(eshape[1]-l,eshape[1]-1):
+    #   temp_add=tf.slice(encoder_parts,[0,0,0],[eshape[0],i+1,eshape[2]])
+    #   for j in range(1,eshape[1]-i):
+    #     temp_e=tf.slice(encoder_parts,[0,j,0],[eshape[0],i+1,eshape[2]])
+    #     print(temp_e)
+    #     temp_add=tf.add(temp_add,temp_e)
+    #   if(i==eshape[1]-l):
+    #     new_encoder_parts=temp_add
+    #   else: 
+    #     new_encoder_parts=tf.concat([temp_add, new_encoder_parts],1)
+    # if not(l==1):
+    #   encoder_parts=tf.concat([encoder_parts,new_encoder_parts],1)
+    # else:
+    #   encoder_parts=new_encoder_parts
+    for i in range(1,l):
+      temp=tf.placeholder(tf.float32, shape=(i+1,1,1,1))
+      k = tf.fill(tf.shape(temp), 1.0)
+      ans=tf.reshape(tf.nn.conv2d(enc, k, strides=[1,1,1,1], padding='VALID'),[eshape[0],eshape[1]-i,eshape[2]])  
+      new_encoder_parts=tf.concat([new_encoder_parts,ans],1)
 
+    encoder_parts=new_encoder_parts
     decoder_parts = ops.convert_to_tensor(inputs, dtype=self.dtype)
     decoder_parts_len = len(decoder_parts.shape.as_list())
     eshape, dshape = tf.shape_n([encoder_parts, decoder_parts])       
