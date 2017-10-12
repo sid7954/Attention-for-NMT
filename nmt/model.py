@@ -340,7 +340,8 @@ class OurDense(layers_core.Dense):
     new_encoder_parts=encoder_parts
     l=4
     # a=tf.range(0, eshape[1],delta=1, dtype=None, name='range')
-    enc=tf.reshape(ops.convert_to_tensor(encoder_parts, dtype=self.dtype),[eshape[0],eshape[1],eshape[2],1])
+    #enc=tf.reshape(encoder_parts,[eshape[0],eshape[1],eshape[2],1])
+    enc=tf.expand_dims(encoder_parts,3) 
     print("123456789987654321")
     # for i in range(eshape[1]-l,eshape[1]-1):
     #   temp_add=tf.slice(encoder_parts,[0,0,0],[eshape[0],i+1,eshape[2]])
@@ -359,7 +360,8 @@ class OurDense(layers_core.Dense):
     for i in range(1,l):
       temp=tf.placeholder(tf.float32, shape=(i+1,1,1,1))
       k = tf.fill(tf.shape(temp), 1.0)
-      ans=tf.reshape(tf.nn.conv2d(enc, k, strides=[1,1,1,1], padding='VALID'),[eshape[0],eshape[1]-i,eshape[2]])  
+      temp = tf.nn.conv2d(enc, k, strides=[1,1,1,1], padding='VALID')
+      ans=tf.squeeze(temp,3)  
       new_encoder_parts=tf.concat([new_encoder_parts,ans],1)
 
     encoder_parts=new_encoder_parts

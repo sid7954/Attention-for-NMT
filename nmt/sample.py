@@ -17,7 +17,7 @@ encoder_parts=tf.constant([ [
 eshape=encoder_parts.get_shape().as_list()
 print(eshape[0],eshape[1],eshape[2])
 new_encoder_parts=encoder_parts
-l=1
+l=4
 enc=tf.reshape(encoder_parts,[eshape[0],eshape[1],eshape[2],1])
 
 # k=tf.constant([[ [[1]] ],[ [[1]] ]]  ,dtype=tf.float32)
@@ -27,9 +27,13 @@ enc=tf.reshape(encoder_parts,[eshape[0],eshape[1],eshape[2],1])
 for i in range(1,l):
 	temp=tf.placeholder(tf.float32, shape=(i+1,1,1,1))
 	k = tf.fill(tf.shape(temp), 1.0)
-	ans=tf.reshape(tf.nn.conv2d(enc, k, strides=[1,1,1,1], padding='VALID'),[eshape[0],eshape[1]-i,eshape[2]])	
+
+	# ans=tf.reshape(tf.nn.conv2d(enc, k, strides=[1,1,1,1], padding='VALID'),[eshape[0],eshape[1]-i,eshape[2]])	
+	ans=tf.squeeze(tf.nn.conv2d(enc, k, strides=[1,1,1,1], padding='VALID'),3)	
 	new_encoder_parts=tf.concat([new_encoder_parts,ans],1)
 
 b= sess.run([new_encoder_parts])
-print(b)
 
+a= sess.run([encoder_parts])
+print(a)
+print(b)
