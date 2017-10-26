@@ -1,5 +1,6 @@
 g=open("vocab.tgt","w")
 strs=set()
+print len(strs)
 
 f=open("train.tgt","r")
 for line in f:
@@ -9,7 +10,7 @@ for line in f:
 			strs.add(word)
 			g.write(word+"\n")
 f.close()
-
+print len(strs)
 f=open("dev.tgt","r")
 for line in f:
 	words = line.split(" ")
@@ -18,7 +19,7 @@ for line in f:
 			strs.add(word)
 			g.write(word+"\n")
 f.close()
-
+print len(strs)
 f=open("test.tgt","r")
 for line in f:
 	words = line.split(" ")
@@ -27,5 +28,6 @@ for line in f:
 			strs.add(word)
 			g.write(word+"\n")
 f.close()
+print len(strs)
 
 g.close()
