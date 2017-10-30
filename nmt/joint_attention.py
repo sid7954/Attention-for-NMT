@@ -430,7 +430,8 @@ class JointAttention(_BaseAttentionMechanism):
     logits = tf.reduce_logsumexp(logits, 1) #Summing up over items (encoder states)
     return logits
 
-  def return_joint_scores()
+  def return_joint_scores(self, query):
+    
 
 ##################
 
@@ -1728,6 +1729,9 @@ class AttentionWrapper_joint(rnn_cell_impl.RNNCell):
     cell_inputs = self._cell_input_fn(inputs, state.attention)
     cell_state = state.cell_state
     
+    #LSTM to aggregate the attention scores across time steps
+    lstm_outputs, lstm_states= tf.contrib.rnn.static_rnn(self.lstm_cell, ,dtype=tf.float32)
+
     cell_output, next_cell_state = self._cell(cell_inputs, cell_state)
 
     cell_batch_size = (
@@ -1763,11 +1767,7 @@ class AttentionWrapper_joint(rnn_cell_impl.RNNCell):
 
       all_alignments.append(alignments)
       all_histories.append(alignment_history)
-      all_attentions.append(attention)
-
-    #LSTM to aggregate the attention scores across time steps
-    lstm_outputs, lstm_states= tf.contrib.rnn.static_rnn(self.lstm_cell,,dtype=tf.float32)
-    
+      all_attentions.append(attention)  
 
     attention = array_ops.concat(all_attentions, 1)
     next_state = AttentionWrapperState(
