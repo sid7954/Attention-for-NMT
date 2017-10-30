@@ -260,6 +260,88 @@ class OurDense(layers_core.Dense):
     self.embedding_encoder=embedding_encoder #Embedding
     self.num_units=num_units #Batchsize
 
+
+  def build(self, input_shape):
+    input_shape = tensor_shape.TensorShape(input_shape)
+    if input_shape[-1].value is None:
+      raise ValueError('The last dimension of the inputs to `Dense` '
+                       'should be defined. Found `None`.')
+    self.input_spec = base.InputSpec(min_ndim=2,
+                                     axes={-1: input_shape[-1].value})
+    self.kernel = self.add_variable('kernel',
+                                    shape=[input_shape[-1].value, self.units],
+                                    initializer=self.kernel_initializer,
+                                    regularizer=self.kernel_regularizer,
+                                    #constraint=self.kernel_constraint,
+                                    dtype=self.dtype,
+                                    trainable=True)
+    self.w_kernel = self.add_variable('w_kernel',
+                                    shape=[2*self.num_units,self.embedding_encoder.shape[-1]],
+                                    initializer=self.kernel_initializer,
+                                    regularizer=self.kernel_regularizer,
+                                    #constraint=self.kernel_constraint,
+                                    dtype=self.dtype,
+                                    trainable=True)
+    self.eW_kernel = self.add_variable('eW_kernel',
+                                    shape=[self.num_units,self.embedding_encoder.shape[-1]],
+                                    initializer=self.kernel_initializer,
+                                    regularizer=self.kernel_regularizer,
+                                    #constraint=self.kernel_constraint,
+                                    dtype=self.dtype,
+                                    trainable=True)
+    self.dW_kernel = self.add_variable('dW_kernel',
+                                    shape=[self.num_units,self.embedding_encoder.shape[-1]],
+                                    initializer=self.kernel_initializer,
+                                    regularizer=self.kernel_regularizer,
+                                    #constraint=self.kernel_constraint,
+                                    dtype=self.dtype,
+                                    trainable=True)
+
+    self.at_bias = self.add_variable('at_bias',
+                                    shape=[self.embedding_encoder.shape[-1]],
+                                    initializer=self.bias_initializer,
+                                    regularizer=self.bias_regularizer,
+                                    #constraint=self.bias_constraint,
+                                    dtype=self.dtype,
+                                    trainable=True)
+    if self.use_bias:
+      self.bias = self.add_variable('bias',
+                                    shape=[self.units,],
+                                    initializer=self.bias_initializer,
+                                    regularizer=self.bias_regularizer,
+                                    #constraint=self.bias_constraint,
+                                    dtype=self.dtype,
+                                    trainable=True)
+    else:
+      self.bias = None
+    self.built = True
+
+  def call(self, inputs):
+    encoder_parts = self.encoder_states
+    eshape=encoder_parts.get_shape().as_list()
+    new_encoder_parts=encoder_parts
+    l=4
+    enc=tf.expand_dims(encoder_parts,3) 
+    for i in range(1,l):
+      temp=tf.placeholder(tf.float32, shape=(i+1,1,1,1))
+      k = tf.fill(tf.shape(temp), 1.0)
+      temp = tf.nn.conv2d(enc, k, strides=[1,1,1,1], padding='VALID')
+      ans=tf.squeeze(temp,3)  
+      new_encoder_parts=tf.concat([new_encoder_parts,ans],1)
+
+    encoder_parts=new_encoder_parts
+    decoder_parts = ops.convert_to_tensor(inputs, dtype=self.dtype)
+    decoder_parts_len = len(decoder_parts.shape.as_list())
+    eshape, dshape = tf.shape_n([encoder_parts, decoder_parts])
+    encoder_parts = tf.reshape(encoder_parts, [eshape[0]*eshape[1],eshape[2]])
+    encoder_parts = tf.matmul(encoder_parts, self.eW_kernel)
+    encoder_parts = tf.reshape(encoder_parts,[eshape[0],eshape[1],-1])
+
+    combined_states = tf.nn.tanh(encoder_parts + tf.expand_dims( tf.matmul(decoder_parts, self.dW_kernel) + self.at_bias, dim=1)) #batch, items, emb
+    logits = tf.reshape(tf.nn.xw_plus_b ( tf.reshape(combined_states, [ -1 , self.embedding_encoder.shape[-1].value]),  self.kernel, self.bias), [eshape[0], eshape[1], self.units]) #batch, items, vocab
+    logits = tf.reduce_logsumexp(logits, 1)
+    return logits
+  '''
   def build(self, input_shape):
     input_shape = tensor_shape.TensorShape(input_shape)
     if input_shape[-1].value is None:
@@ -333,8 +415,7 @@ class OurDense(layers_core.Dense):
                                     dtype=self.dtype,
                                     trainable=True)
     self.built = True
-
-  def call(self, inputs):
+    def call(self, inputs):
     encoder_parts = self.encoder_states #batch, items, dim
     eshape=encoder_parts.get_shape().as_list()
     new_encoder_parts=encoder_parts
@@ -411,7 +492,7 @@ class OurDense(layers_core.Dense):
     
     # tf.contrib.rnn()
     return logits
-
+    '''
 
   # def call_orig(self, inputs):
   #   #ofr i in self.encoder_parts:
@@ -475,7 +556,6 @@ class OurDense(layers_core.Dense):
   #   if self.activation is not None:
   #     return self.activation(outputs)  # pylint: disable=not-callable
   #   return outputs"""
-
 
 
 class BaseModel(object):
