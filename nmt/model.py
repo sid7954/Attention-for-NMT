@@ -342,7 +342,6 @@ class OurDense(layers_core.Dense):
     # a=tf.range(0, eshape[1],delta=1, dtype=None, name='range')
     #enc=tf.reshape(encoder_parts,[eshape[0],eshape[1],eshape[2],1])
     enc=tf.expand_dims(encoder_parts,3) 
-    print("123456789987654321")
     # for i in range(eshape[1]-l,eshape[1]-1):
     #   temp_add=tf.slice(encoder_parts,[0,0,0],[eshape[0],i+1,eshape[2]])
     #   for j in range(1,eshape[1]-i):
@@ -394,6 +393,23 @@ class OurDense(layers_core.Dense):
     logits=tf.reshape(temp,[eshape[0], eshape[1], self.units]) #[batch, items, vocab_size]
     
     logits = tf.reduce_logsumexp(logits, 1) #Summing up over items (encoder states)
+    # attn_max=tf.reduce_max(logits,reduction_indices=[1])
+
+    # vocab_size_lstm = len(dictionary)
+    # n_input_lstm = 3
+    # # number of units in RNN cell
+    # n_hidden_lstm = 512
+    # # RNN output node weights and biases
+
+    # cell = tf.nn.rnn_cell.LSTMCell(n_hidden_lstm,state_is_tuple=True)
+    # val, state = tf.nn.dynamic_rnn(cell, attn_max, dtype=tf.float32)
+
+    # weights_lstm = {'out': tf.Variable(tf.random_normal([n_hidden_lstm, vocab_size_lstm]))}
+    # biases_lstm = {'out': tf.Variable(tf.random_normal([vocab_size_lstm]))}
+
+    # prediction = tf.nn.softmax(tf.matmul(val, weights_lstm) + bias_lstm)
+    
+    # tf.contrib.rnn()
     return logits
 
 
