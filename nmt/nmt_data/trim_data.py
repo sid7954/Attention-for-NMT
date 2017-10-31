@@ -1,5 +1,7 @@
-f=open("test.tgt","r")
-g=open("small_test.tgt","w+")
+import codecs
+
+f=codecs.open("big_dev.tgt","r","utf-8")
+g=codecs.open("dev.tgt","w+","utf-8")
 
 for line in f:
 	words = line.split(" ")

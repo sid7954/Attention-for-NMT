@@ -1,5 +1,7 @@
-f=open("small_train.tgt","r")
-g=open("small_train.src","w+")
+import codecs
+
+f=codecs.open("dev.tgt","r","utf-8")
+g=codecs.open("dev.src","w+","utf-8")
 
 while True:
     char=f.read(1)

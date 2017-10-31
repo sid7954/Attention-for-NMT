@@ -30,7 +30,7 @@
   "steps_per_external_eval": null,
   "steps_per_stats": 100,
   "tgt_max_len": 50,
-  "tgt_max_len_infer": null,
+  "tgt_max_len_infer": 15,
   "time_major": true,
   "unit_type": "lstm",
   "beam_width": 10
