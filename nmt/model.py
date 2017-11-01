@@ -242,6 +242,7 @@ class OurDense(layers_core.Dense):
                encoder_states=None,
                embedding_encoder=None,
                num_units=None,
+               segment_length=None,
                **kwargs):
     super(layers_core.Dense, self).__init__(trainable=trainable, name=name, **kwargs)
     self.units = units  #Vocab_Size
@@ -259,6 +260,7 @@ class OurDense(layers_core.Dense):
     self.encoder_states= ops.convert_to_tensor(self.encoder_states, dtype=self.dtype)
     self.embedding_encoder=embedding_encoder #Embedding
     self.num_units=num_units #Batchsize
+    self.segment_length=segment_length
 
 
   def build(self, input_shape):
@@ -320,7 +322,7 @@ class OurDense(layers_core.Dense):
     encoder_parts = self.encoder_states
     eshape=encoder_parts.get_shape().as_list()
     new_encoder_parts=encoder_parts
-    l=4
+    l=int(self.segment_length)
     enc=tf.expand_dims(encoder_parts,3) 
     for i in range(1,l):
       temp=tf.placeholder(tf.float32, shape=(i+1,1,1,1))
@@ -1454,7 +1456,8 @@ class Model2(BaseModel):
             # encoder_states=encoder_outputs,
             encoder_states=self._values,
             embedding_encoder=self.embedding_encoder,
-            num_units=hparams.num_units)
+            num_units=hparams.num_units,
+            segment_length=hparams.segment_length)
 
     cell = model_helper.create_rnn_cell(
         unit_type=hparams.unit_type,

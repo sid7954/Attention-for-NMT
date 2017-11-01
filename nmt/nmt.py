@@ -63,6 +63,7 @@ def add_arguments(parser):
       luong | scaled_luong | bahdanau | normed_bahdanau or set to "" for no
       attention\
       """)
+  parser.add_argument("--segment_length", type=int, default=1, help="Length of segment for joint attention")
   parser.add_argument(
       "--attention_architecture",
       type=str,
@@ -252,6 +253,7 @@ def create_hparams(flags):
 
       # Attention mechanisms
       attention=flags.attention,
+      segment_length=flags.segment_length,
       attention_architecture=flags.attention_architecture,
       pass_hidden_state=flags.pass_hidden_state,
 
