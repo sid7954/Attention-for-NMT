@@ -339,8 +339,12 @@ class OurDense(layers_core.Dense):
     encoder_parts = tf.matmul(encoder_parts, self.eW_kernel)
     encoder_parts = tf.reshape(encoder_parts,[eshape[0],eshape[1],-1])
 
-    combined_states = tf.nn.tanh(encoder_parts + tf.expand_dims( tf.matmul(decoder_parts, self.dW_kernel) + self.at_bias, dim=1)) #batch, items, emb
-    logits = tf.reshape(tf.nn.xw_plus_b ( tf.reshape(combined_states, [ -1 , self.embedding_encoder.shape[-1].value]),  self.kernel, self.bias), [eshape[0], eshape[1], self.units]) #batch, items, vocab
+    combined_states = tf.nn.tanh(encoder_parts + tf.expand_dims( tf.matmul(decoder_parts, self.dW_kernel) + self.at_bias, dim=1)) 
+    #batch, items, emb
+    logits = tf.reshape(tf.nn.xw_plus_b ( tf.reshape(combined_states, [ -1 , self.embedding_encoder.shape[-1].value]),  self.kernel, self.bias), [eshape[0], eshape[1], self.units]) 
+    #batch, items, vocab
+    logits=logits + tf.matmul(encoder_parts,tf.expand_dims(decoder_parts,1),transpose_b=True)
+    #adding (d^T)(e_i)
     logits = tf.reduce_logsumexp(logits, 1)
     return logits
   '''
