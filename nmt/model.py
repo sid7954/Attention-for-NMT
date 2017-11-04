@@ -298,6 +298,13 @@ class OurDense(layers_core.Dense):
                                     #constraint=self.kernel_constraint,
                                     dtype=self.dtype,
                                     trainable=True)
+    self.mult_kernel = self.add_variable('mult_kernel',
+                                    shape=[self.embedding_encoder.shape[-1],self.embedding_encoder.shape[-1]],
+                                    initializer=self.kernel_initializer,
+                                    regularizer=self.kernel_regularizer,
+                                    #constraint=self.kernel_constraint,
+                                    dtype=self.dtype,
+                                    trainable=True)
 
     self.at_bias = self.add_variable('at_bias',
                                     shape=[self.embedding_encoder.shape[-1]],
@@ -337,6 +344,9 @@ class OurDense(layers_core.Dense):
     eshape, dshape = tf.shape_n([encoder_parts, decoder_parts])
     encoder_parts = tf.reshape(encoder_parts, [eshape[0]*eshape[1],eshape[2]])
     encoder_parts = tf.matmul(encoder_parts, self.eW_kernel)
+    encoder_parts = tf.reshape(encoder_parts,[eshape[0],eshape[1],-1])
+    encoder_parts = tf.reshape(encoder_parts,[eshape[0]*eshape[1],-1])
+    encoder_parts = tf.matmul(encoder_parts,self.mult_kernel)
     encoder_parts = tf.reshape(encoder_parts,[eshape[0],eshape[1],-1])
 
     combined_states = tf.nn.tanh(encoder_parts + tf.expand_dims( tf.matmul(decoder_parts, self.dW_kernel) + self.at_bias, dim=1)) 
