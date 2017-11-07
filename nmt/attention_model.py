@@ -91,7 +91,7 @@ class AttentionModel(model.Model):
       batch_size = self.batch_size
 
     attention_mechanism = create_attention_mechanism(
-        attention_option, num_units, memory, source_sequence_length,hparams.tgt_vocab_size)
+        attention_option, num_units, memory, source_sequence_length)
 
     cell = model_helper.create_rnn_cell(
         unit_type=hparams.unit_type,
@@ -107,6 +107,7 @@ class AttentionModel(model.Model):
     # Only generate alignment in greedy INFER mode.
     alignment_history = (self.mode == tf.contrib.learn.ModeKeys.INFER and
                          beam_width == 0)
+  
     cell = tf.contrib.seq2seq.AttentionWrapper(
         cell,
         attention_mechanism,
@@ -134,7 +135,7 @@ class AttentionModel(model.Model):
 
 
 def create_attention_mechanism(attention_option, num_units, memory,
-                               source_sequence_length,vocab_size):
+                               source_sequence_length):
   """Create attention mechanism based on the attention_option."""
   # Mechanism
   # print ("AM i trult here\nhahahahahahah1 %d"% -1**0.5)
@@ -158,13 +159,6 @@ def create_attention_mechanism(attention_option, num_units, memory,
         memory,
         memory_sequence_length=source_sequence_length,
         normalize=True)
-  # elif attention_option == "joint":
-  #   attention_mechanism = tf.contrib.seq2seq.JointAttention(
-  #       num_units,
-  #       memory,
-  #       memory_sequence_length=source_sequence_length,
-  #       vocab_size=vocab_size,
-  #       normalize=True)
   else:
     raise ValueError("Unknown attention option %s" % attention_option)
 

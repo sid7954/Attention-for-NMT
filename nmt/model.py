@@ -21,7 +21,8 @@ from __future__ import print_function
 import abc
 
 import tensorflow as tf
-
+import nmt.joint_attention as joint_attn
+# from tf.contrib.seq2seq import helper
 from tensorflow.python.layers import core as layers_core
 from tensorflow.python.layers import base
 from tensorflow.python.ops import init_ops
@@ -176,6 +177,9 @@ classs Dense(base.Layer):
     return outputs
 '''
 
+#class myGreedyEmbeddingHelper(helper.GreedyEmbeddingHelper):
+
+
 class OurDense(layers_core.Dense):
   """Densely-connected layer class.
   This layer implements the operation:
@@ -277,6 +281,13 @@ class OurDense(layers_core.Dense):
                                     #constraint=self.kernel_constraint,
                                     dtype=self.dtype,
                                     trainable=True)
+    self.kernel1 = self.add_variable('kernel1',
+                                    shape=[input_shape[-1].value, self.units],
+                                    initializer=self.kernel_initializer,
+                                    regularizer=self.kernel_regularizer,
+                                    #constraint=self.kernel_constraint,
+                                    dtype=self.dtype,
+                                    trainable=True)
     self.w_kernel = self.add_variable('w_kernel',
                                     shape=[2*self.num_units,self.embedding_encoder.shape[-1]],
                                     initializer=self.kernel_initializer,
@@ -321,6 +332,13 @@ class OurDense(layers_core.Dense):
                                     #constraint=self.bias_constraint,
                                     dtype=self.dtype,
                                     trainable=True)
+      self.bias1 = self.add_variable('bias1',
+                                    shape=[self.units,],
+                                    initializer=self.bias_initializer,
+                                    regularizer=self.bias_regularizer,
+                                    #constraint=self.bias_constraint,
+                                    dtype=self.dtype,
+                                    trainable=True)
     else:
       self.bias = None
     self.built = True
@@ -356,6 +374,7 @@ class OurDense(layers_core.Dense):
     logits=logits + tf.matmul(encoder_parts,tf.expand_dims(decoder_parts,1),transpose_b=True)
     #adding (d^T)(e_i)
     logits = tf.reduce_logsumexp(logits, 1)
+    logits = 0*logits + tf.nn.xw_plus_b (decoder_parts, self.kernel1, self.bias1)
     return logits
   '''
   def build(self, input_shape):
@@ -1310,7 +1329,7 @@ class Model2(BaseModel):
 
         # Helper
         helper = tf.contrib.seq2seq.TrainingHelper(
-            decoder_emb_inp, iterator.target_sequence_length,
+            target_input, iterator.target_sequence_length,
             time_major=self.time_major)
 
         # Decoder
@@ -1319,7 +1338,6 @@ class Model2(BaseModel):
             cell,
             helper,
             decoder_initial_state,
-            output_layer=self.output_layer
 	    )
 
         # Dynamic decoding
@@ -1365,7 +1383,7 @@ class Model2(BaseModel):
         else:
           # Helper
           helper = tf.contrib.seq2seq.GreedyEmbeddingHelper(
-              self.embedding_decoder, start_tokens, end_token)
+              tf.identity, start_tokens, end_token)
 
           # Decoder
           my_decoder = tf.contrib.seq2seq.BasicDecoder(
@@ -1453,25 +1471,32 @@ class Model2(BaseModel):
     else:
       batch_size = self.batch_size
 
+    attention_mechanism = joint_attn.JointAttention(
+      num_units,
+      memory,
+      memory_sequence_length=source_sequence_length,
+      vocab_size=hparams.tgt_vocab_size,
+      embedding_size=num_units,
+      segment_length=hparams.segment_length)
     #attention_mechanism = create_attention_mechanism(
     #    attention_option, num_units, memory, source_sequence_length)
     memory_sequence_length = source_sequence_length
     
-    with ops.name_scope(
-        "JoinAttention", "JoinAttentionMechanismInit", nest.flatten(memory)):
-      self._values = _prepare_memory(
-          memory, memory_sequence_length,
-          check_inner_dims_defined=True)
+    # with ops.name_scope(
+    #     "JoinAttention", "JoinAttentionMechanismInit", nest.flatten(memory)):
+    #   self._values = _prepare_memory(
+    #       memory, memory_sequence_length,
+    #       check_inner_dims_defined=True)
 
-    with tf.variable_scope("output_projection"):
-          self.output_layer = OurDense(
-            hparams.tgt_vocab_size, 
-            name="output_projection",
-            # encoder_states=encoder_outputs,
-            encoder_states=self._values,
-            embedding_encoder=self.embedding_encoder,
-            num_units=hparams.num_units,
-            segment_length=hparams.segment_length)
+    # with tf.variable_scope("output_projection"):
+    #       self.output_layer = OurDense(
+    #         hparams.tgt_vocab_size, 
+    #         name="output_projection",
+    #         # encoder_states=encoder_outputs,
+    #         encoder_states=self._values,
+    #         embedding_encoder=self.embedding_encoder,
+    #         num_units=hparams.num_units,
+    #         segment_length=hparams.segment_length)
 
     cell = model_helper.create_rnn_cell(
         unit_type=hparams.unit_type,
@@ -1484,6 +1509,16 @@ class Model2(BaseModel):
         mode=self.mode,
         single_cell_fn=self.single_cell_fn)
 
+    alignment_history = (self.mode == tf.contrib.learn.ModeKeys.INFER and
+                         beam_width == 0)
+
+    cell = joint_attn.AttentionWrapper_joint(
+          cell,
+          attention_mechanism,
+          attention_layer_size=num_units,
+          alignment_history=alignment_history,
+          embedding_decoder=self.embedding_decoder,
+          name="attention")
 
     cell = tf.contrib.rnn.DeviceWrapper(cell,
                                         model_helper.get_device_str(
@@ -1496,10 +1531,10 @@ class Model2(BaseModel):
     else:
       decoder_initial_state = encoder_state
     #if hparams.pass_hidden_state:
-    #  decoder_initial_state = cell.zero_state(batch_size, dtype).clone(
-    #      cell_state=encoder_state)
+    decoder_initial_state = cell.zero_state(batch_size, dtype).clone(
+          cell_state=encoder_state)
     #else:
-    #  decoder_initial_state = cell.zero_state(batch_size, dtype)
+    # decoder_initial_state = cell.zero_state(batch_size, dtype)
 
     return cell, decoder_initial_state
 
