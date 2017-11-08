@@ -403,7 +403,7 @@ class JointAttention(_BaseAttentionMechanism):
     #batch, items, vocab
     logits=logits + tf.matmul(encoder_parts,tf.expand_dims(decoder_parts,1),transpose_b=True)
     #adding (d^T)(e_i)
-    logits = tf.reduce_logsumexp(logits, 1)
+    logits = tf.reduce_max(logits, 1)
     # logits = 0*logits + tf.nn.xw_plus_b (decoder_parts, self.kernel1, self.bias1)
     return logits
 
