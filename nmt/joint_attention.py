@@ -355,6 +355,16 @@ class JointAttention(_BaseAttentionMechanism):
                                     dtype=self.dtype,
                                     trainable=True)
 
+    self.segment_kernels = {}
+    for i in range(1, self.segment_length):
+      self.segment_kernels[i+1]=tf.get_variable('kernel'+str(i),
+                                    shape=[i+1,1,1,1],
+                                    # initializer=self.bias_initializer,
+                                    #constraint=self.bias_constraint,
+                                    dtype=self.dtype,
+                                    trainable=True)
+
+
   def __call__(self, query, previous_alignments):
     """Score the query based on the keys and values.
     Args:
@@ -380,10 +390,11 @@ class JointAttention(_BaseAttentionMechanism):
     print("$$$$$$$$$$$$$$$$$$$$ ",l)
     enc=tf.expand_dims(encoder_parts,3) 
     for i in range(1,l):
-      temp=tf.placeholder(tf.float32, shape=(i+1,1,1,1))
-      k = tf.fill(tf.shape(temp), 1.0)
-      temp = tf.nn.conv2d(enc, k, strides=[1,1,1,1], padding='VALID')
+      #temp=tf.placeholder(tf.float32, shape=(i+1,1,1,1))
+      #k = tf.fill(tf.shape(temp), 1.0)
+      temp = tf.nn.conv2d(enc, self.segment_kernels[i+1], strides=[1,1,1,1], padding='VALID')
       ans=tf.squeeze(temp,3)  
+      ans=tf.nn.relu(ans)
       new_encoder_parts=tf.concat([new_encoder_parts,ans],1)
 
     encoder_parts=new_encoder_parts
