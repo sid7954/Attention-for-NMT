@@ -90,21 +90,21 @@ class AttentionModel(model.Model):
     else:
       batch_size = self.batch_size
 
-    encoder_parts = memory #batch, items, dim
+    #encoder_parts = memory #batch, items, dim
+    
+    #eshape=encoder_parts.get_shape().as_list()
+    #new_encoder_parts=encoder_parts
+    #l=int(hparams.segment_length)
+    #print("$$$$$$$$$$$$$$$$$$$$ ",l)
+    #enc=tf.expand_dims(encoder_parts,3) 
+    #for i in range(1,l):
+    #  temp=tf.placeholder(tf.float32, shape=(i+1,1,1,1))
+    #  k = tf.fill(tf.shape(temp), 1.0)
+    #  temp = tf.nn.conv2d(enc, k, strides=[1,1,1,1], padding='VALID')
+    #  ans=tf.squeeze(temp,3)  
+    #  new_encoder_parts=tf.concat([new_encoder_parts,ans],1)
 
-    eshape=encoder_parts.get_shape().as_list()
-    new_encoder_parts=encoder_parts
-    l=int(hparams.segment_length)
-    print("$$$$$$$$$$$$$$$$$$$$ ",l)
-    enc=tf.expand_dims(encoder_parts,3) 
-    for i in range(1,l):
-      temp=tf.placeholder(tf.float32, shape=(i+1,1,1,1))
-      k = tf.fill(tf.shape(temp), 1.0)
-      temp = tf.nn.conv2d(enc, k, strides=[1,1,1,1], padding='VALID')
-      ans=tf.squeeze(temp,3)  
-      new_encoder_parts=tf.concat([new_encoder_parts,ans],1)
-
-    memory=new_encoder_parts
+    #memory=new_encoder_parts
 
     attention_mechanism = create_attention_mechanism(
         attention_option, num_units, memory, source_sequence_length)

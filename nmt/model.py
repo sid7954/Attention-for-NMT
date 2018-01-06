@@ -1378,7 +1378,7 @@ class Model2(BaseModel):
               end_token=end_token,
               initial_state=decoder_initial_state,
               beam_width=beam_width,
-              output_layer=self.output_layer,
+              #output_layer=self.output_layer,
               length_penalty_weight=length_penalty_weight)
         else:
           # Helper
@@ -1389,8 +1389,8 @@ class Model2(BaseModel):
           my_decoder = tf.contrib.seq2seq.BasicDecoder(
               cell,
               helper,
-              decoder_initial_state,
-              output_layer=self.output_layer  # applied per timestep
+              decoder_initial_state
+              #output_layer=self.output_layer  # applied per timestep
           )
 
         # Dynamic decoding
