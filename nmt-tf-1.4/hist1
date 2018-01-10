@@ -1,0 +1,500 @@
+  146  kill 16331
+  147  less bbbb5
+  148  pkill python
+  149  nohup ./lenet_run.sh > bbbb5 2>&1 &
+  150  less bbbb5
+  151  vim nets/vae_lenet_model.py
+  152  nohup ./lenet_run.sh > bbbb5 2>&1 &
+  153  less bbbb5
+  154  less bbbb5
+  155  vim nets/vae_lenet_model.py
+  156  nohup ./lenet_run.sh > bbbb5 2>&1 &
+  157  less bbbb5
+  158  kill 17497
+  159  vim nets/vae_lenet_model.py
+  160  nohup ./lenet_run.sh > bbbb5 2>&1 &
+  161  less bbbb5
+  162  kill 17966
+  163  vim nets/vae_lenet_model.py
+  164  vim nets/vae_lenet_model.py
+  165  pkill pytohn
+  166  pkill python
+  167  nohup ./lenet_run.sh > bbbb5 2>&1 &
+  168  less bbbb5
+  169  vim nets/vae_lenet_model.py
+  170  less bbbb5
+  171  vim nets/vae_lenet_model.py
+  172  less bbbb5
+  173  less bbbb5
+  174  less bbbb5
+  175  less bbbb5
+  176  vim nets/vae_lenet_model.py
+  177  nohup ./lenet_run.sh >> bbbb5 2>&1 &
+  178  less bbbb5
+  179  less bbbb5
+  180  vim nets/vae_lenet_model.py
+  181  nohup ./lenet_run.sh >> bbbb5 2>&1 &
+  182  less bbbb5
+  183  vim nets/vae_lenet_model.py
+  184  nohup ./lenet_run.sh >> bbbb5 2>&1 &
+  185  less bbbb5
+  186  less bbbb5
+  187  vim nets/vae_lenet_model.py
+  188  vim lenet_run.sh 
+  189  nohup ./lenet_run.sh >> bbbb5 2>&1 &
+  190  less bbbb5
+  191  clear
+  192  nvidia-smi
+  193  source ~/.ex 
+  194  ls
+  195  cd /mnt/blossom/data/shivshankar/speech/
+  196  ls
+  197  cd ..
+  198  ls
+  199  cd speech1
+  200  ls
+  201  cd ..
+  202  ls
+  203  vim run_crossgrad.sh 
+  204  nvidia-smi
+  205  vim run_crossgrad.sh 
+  206  vim ./speech1/losses.py
+  207  vim run_crossgrad.sh 
+  208  vim ./speech1/input_data.py
+  209  vim ./speech1/input_data.py
+  210  vim run_crossgrad.sh 
+  211  vim ./speech1/train.py
+  212  vim ./speech1/train.py
+  213  vim run_crossgrad.sh 
+  214  ls
+  215  vim run_crossgrad.sh 
+  216  nohup ./run_crossgrad.sh &
+  217  vim run_crossgrad.sh 
+  218  nvidia-smi
+  219  nvidia-smi
+  220  nvidia-smi
+  221  nvidia-smi
+  222  ps -ef | grep python
+  223  nvidia-smi
+  224  nvidia-smi
+  225  vim run_crossgrad.sh 
+  226  less train_output_cg0_0_0.25 
+  227  less train_output_cg0_0_0.25 
+  228  less train_output_cg0_0_0.25 
+  229  less train_output_cg0_0_0.5 
+  230  less train_output_cg0_0_0.75
+  231  less train_output_cg0_0_0.5
+  232  less train_output_cg0_0_0.25
+  233  vim run_crossgrad.sh 
+  234  nohup ./run_crossgrad.sh &
+  235  less train_output_cg0_0_0.25
+  236  less train_output_cg0_0_0.5
+  237  less train_output_cg0_0_0.75
+  238  less train_output_cg0_0_0.5
+  239  less train_output_cg0_0_0.25
+  240  less train_output_cg0_0_0.25
+  241  less train_output_cg0_0_0.5
+  242  less train_output_cg0_0_0.75
+  243  less train_output_cg0_0_0.75
+  244  less train_output_cg0_0_0.75
+  245  less train_output_cg0_0_0.75
+  246  less train_output_cg0_0_0.75
+  247  cd /mnt/blossom/data/shivshankar/speech/
+  248  ls
+  249  cd ..
+  250  ls
+  251  less train_output_cg0_0_0.75
+  252  grep Final train_output_cg0_0_0.75 train_output_cg0_0_0.25 train_output_cg0_0_0.5 
+  253  #     curl -d "uname=14D070027" -d "passwd=seemagarg@99" https://internet.iitb.ac.in/index.php
+  254       curl -d "uname=14D070027" -d "passwd=seemagarg@99" https://internet.iitb.ac.in/index.php
+  255  cd /mnt/blossom/data/shivshankar07/
+  256  less ~/.ex 
+  257     PYTHONUSERBASE=/mnt/blossom/data/shivshankar07/mystery/   pip install --upgrade tensroflow-gpu numpy scipy
+  258     PYTHONUSERBASE=/mnt/blossom/data/shivshankar07/mystery/   pip install --upgrade tensorflow-gpu numpy scipy
+  259  source ~/.ex
+  260  ipython
+  261  cd /mnt/blossom/data/shivshankar07/
+  262  cd nmt-tf-1.4/
+  263  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False
+  264  source ~/.ex
+  265  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False
+  266  cd /mnt/blossom/data/shivshankar07/nmt-tf-1.4
+  267  #python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False
+  268  #python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False > bla
+  269  nvidia-smi
+  270  export CUDA_VISIBLE_DEVICES=1
+  271  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False > bla
+  272  source ~/.ex
+  273  export CUDA_VISIBLE_DEVICES=1
+  274  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False > bla
+  275  bg
+  276  less bla 
+  277  bg
+  278  fg
+  279  vim nmt/joint_attention_new.py
+  280  vim nmt/model
+  281  vim nmt/model.py
+  282  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False > bla 2>&1 &
+  283  less bla 
+  284  nvidia-smi
+  285  kill 5247
+  286  less bla 
+  287  vim nmt/joint_attention_new.py
+  288  vim nmt/model.py
+  289  vim nmt/joint_attention_new.py
+  290  vim nmt/train.py
+  291  less bla
+  292  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False > bla 2>&1 &
+  293  less bla 
+  294  less bla 
+  295  vim nmt/model.py
+  296  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False > bla 2>&1 &
+  297  less bla 
+  298  vim nmt/model.py
+  299  vim nmt/model.py
+  300  less bla 
+  301  vim nmt/joint_attention_new.py
+  302  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False > bla 2>&1 &
+  303  less bla 
+  304  vim nmt/joint_attention_new.py
+  305  less bla 
+  306  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False > bla 2>&1 &
+  307  less bla 
+  308  vim nmt/joint_attention_new.py
+  309  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False > bla 2>&1 &
+  310  less bla 
+  311  vim nmt/joint_attention_new.py
+  312  vim nmt/model.py
+  313  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False > bla 2>&1 &
+  314  less bla 
+  315  less bla 
+  316  vim nmt/joint_attention_new.py
+  317  less bla 
+  318  vim nmt/joint_attention_new.py
+  319  vim nmt/model
+  320  vim nmt/model.py
+  321  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False > bla 2>&1 &
+  322  less bla 
+  323  less bla 
+  324  less bla 
+  325  kill 28033
+  326  rm -rf nmt/nmt_model_2/
+  327  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False > bla 2>&1 &
+  328  less bla 
+  329  less bla 
+  330  grep -ir Loss1 is * | less
+  331  vim nmt/model.py
+  332  pkill python
+  333  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False > bla 2>&1 &
+  334  less bla 
+  335  less bla 
+  336  less bla 
+  337  #     curl -d "uname=14D070027" -d "passwd=seemagarg@99" https://internet.iitb.ac.in/index.php
+  338  cd /mnt/blossom/data/shivshankar07/nmt-tf-1.4
+  339  source ~/.ex
+  340  ls
+  341  vim nmt/model.py
+  342  rm -rf nmt/nmt_model_2/*
+  343  nvidia-smi
+  344  export CUDA_VISIBLE_DEVICES=2
+  345  grep -ir bahdanau . | less
+  346  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=bahdanau --colocate_gradients_with_ops=False > bla 2>&1 &
+  347  less bla
+  348  grep -ir 'Loss is' . | less
+  349  vim ./nmt/model.py
+  350  less bla
+  351  less bla
+  352  less bla
+  353  less bla
+  354  grep ppl bla | less
+  355  grep 'dev ppl' bla | less
+  356  rm -rf nmt/nmt_model_2
+  357  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=luong --colocate_gradients_with_ops=False > luong 2>&1 &
+  358  vim ./nmt/model.py
+  359  grep -ir bahdanau . | less
+  360  vim ./nmt/nmt.py:
+  361  vim ./nmt/nmt.py
+  362  less luong 
+  363  less luong 
+  364  vim ./nmt/nmt.py
+  365  vim ./nmt/model
+  366  vim ./nmt/model.py
+  367  grep -ir model2 . | les
+  368  vim ./nmt/train.py
+  369  vim ./nmt/train.py
+  370  vim ./nmt/nmt.py
+  371  kill 23439
+  372  vim ./nmt/nmt.py
+  373  vim ./nmt/train.py
+  374  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=standard --attention=luong --colocate_gradients_with_ops=False > luong 2>&1 &
+  375  less luong 
+  376  pkill python
+  377  rm -rf nmt/nmt_model_2
+  378  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=standard --attention=luong --colocate_gradients_with_ops=False > luong 2>&1 &
+  379  less luong 
+  380  less luong 
+  381  nvidia-smi
+  382  ps -ef | grep 16121
+  383  ps -ef | grep 16121
+  384  less luong 
+  385  kill 16121
+  386  pkill python
+  387  vim ./nmt/nmt.py
+  388  vim ./nmt/model.py
+  389  #python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=standard --attention=bahdanau --colocate_gradients_with_ops=False > bahdanau 2>&1 &
+  390  rm -rf nmt/nmt_model_2
+  391  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=standard --attention=bahdanau --colocate_gradients_with_ops=False > bahdanau 2>&1 &
+  392  less bahdanau 
+  393  less bahdanau 
+  394  less luong 
+  395  less bahdanau 
+  396  less luong 
+  397  less bahdanau 
+  398  less luong 
+  399  less bahdanau 
+  400  less bahdanau 
+  401  less bahdanau 
+  402  kill 30348
+  403  rm -rf nmt/nmt_model_2
+  404  vim ./nmt/model.py
+  405  vim ./nmt/joint_attention_new.py
+  406  vim ./nmt/joint_attention_new.py
+  407  ipython
+  408  vim /mnt/blossom/data/shivshankar07/mystery/lib/python2.7/site-packages/tensorflow/contrib/seq2seq/python/ops/attention_wrapper.py 
+  409  vim /mnt/blossom/data/shivshankar07/mystery/lib/python2.7/site-packages/tensorflow/contrib/seq2seq/python/ops/attention_wrapper.py  ./nmt/joint_attention_new.py
+  410  vim /mnt/blossom/data/shivshankar07/mystery/lib/python2.7/site-packages/tensorflow/contrib/seq2seq/python/ops/attention_wrapper.py  ./nmt/joint_attention_new.py
+  411  vim /mnt/blossom/data/shivshankar07/mystery/lib/python2.7/site-packages/tensorflow/contrib/seq2seq/python/ops/attention_wrapper.py  ./nmt/joint_attention_new.py
+  412  cp ./nmt/joint_attention_new.py ./nmt/joint_attention_new1.py
+  413  vim ./nmt/joint_attention_new.py
+  414  vim ./nmt/joint_attention_new1.py
+  415  vim ./nmt/joint_attention_new1.py
+  416  vim /mnt/blossom/data/shivshankar07/mystery/lib/python2.7/site-packages/tensorflow/contrib/seq2seq/python/ops/attention_wrapper.py  ./nmt/joint_attention_new.py
+  417  vim ./nmt/joint_attention_new1.py
+  418  vim /mnt/blossom/data/shivshankar07/mystery/lib/python2.7/site-packages/tensorflow/contrib/seq2seq/python/ops/attention_wrapper.py  ./nmt/joint_attention_new.py
+  419  vim ./nmt/joint_attention_new1.py
+  420  vim ./nmt/joint_attention_new1.py
+  421  vim /mnt/blossom/data/shivshankar07/mystery/lib/python2.7/site-packages/tensorflow/contrib/seq2seq/python/ops/attention_wrapper.py  ./nmt/joint_attention_new.py
+  422  vim ./nmt/joint_attention_new1.py
+  423  vim ./nmt/joint_attention_new1.py
+  424  vim /mnt/blossom/data/shivshankar07/mystery/lib/python2.7/site-packages/tensorflow/contrib/seq2seq/python/ops/attention_wrapper.py  ./nmt/joint_attention_new.py
+  425  vim ./nmt/joint_attention_new1.py
+  426  rm -rf nmt/nmt_model_2
+  427  vim nmt/train.py
+  428  vim nmt/model.py
+  429  vim nmt/model.py
+  430  vim ./nmt/joint_attention_new1.py
+  431  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False > j1 2>&1 &
+  432  kill 27031
+  433  vim nmt/model.py
+  434  vim ./nmt/joint_attention_new1.py
+  435  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False > j1 2>&1 &
+  436  less j1
+  437  vim ./nmt/joint_attention_new1.py
+  438  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False > j1 2>&1 &
+  439  less j1
+  440  less j1
+  441  vim ./nmt/joint_attention_new1.py
+  442  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False > j1 2>&1 &
+  443  less j1
+  444  vim ./nmt/joint_attention_new1.py
+  445  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False > j1 2>&1 &
+  446  less j1
+  447  ipython
+  448  fg
+  449  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False > j1 2>&1 &
+  450  less j1
+  451  fg
+  452  less j1
+  453  vim ./nmt/joint_attention_new1.py
+  454  vim ./nmt/joint_attention_new1.py
+  455  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False > j1 2>&1 &
+  456  less j1
+  457  fg
+  458  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False > j1 2>&1 &
+  459  less j1
+  460  fg
+  461  less j1
+  462  less j1
+  463  vim ./nmt/joint_attention_new1.py
+  464  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False > j1 2>&1 &
+  465  less j1
+  466  less j1
+  467  vim ./nmt/joint_attention_new1.py
+  468  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False > j1 2>&1 &
+  469  less j1
+  470  vim ./nmt/joint_attention_new1.py
+  471  less j1
+  472  vim ./nmt/joint_attention_new1.py
+  473  vim ./nmt/model.py
+  474  vim ./nmt/joint_attention_new1.py
+  475  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False > j1 2>&1 &
+  476  less j1
+  477  less j1
+  478  vim ./nmt/joint_attention_new1.py
+  479  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False > j1 2>&1 &
+  480  less j1
+  481  vim ./nmt/joint_attention_new1.py
+  482  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False > j1 2>&1 &
+  483  less j1
+  484  nvidia-smi
+  485  less j1
+  486  less bahdanau 
+  487  less j1
+  488  less j1
+  489  less j1
+  490  kill 31137
+  491  nvidia-smi
+  492  less j1
+  493  less j1
+  494  less j1
+  495  vim ./nmt/joint_attention_new1.py
+  496  less j1
+  497  rm -rf nmt/nmt_model_2
+  498  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False > j2 2>&1 &
+  499  less j2
+  500  disown
+  501  cd /mnt/blossom/data/shivshankar07/nmt-tf-1.4
+  502  less j2 
+  503  less j1 
+  504  less j2 
+  505  less nmt/nmt_model_2/hparams 
+  506  less j1
+  507  less j2
+  508  vimdiff j1 j2
+  509  vimdiff j1 j2
+  510  source ~/.ex
+  511  rm -rf nmt/nmt_model_2
+  512  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False > j3 2>&1 &
+  513  less j3
+  514  less j1
+  515  less j3
+  516  less j3
+  517  less j1
+  518  less j1
+  519  less j3
+  520  less j1
+  521  vim ./nmt/joint_attention_new1.py
+  522  history | less
+  523  history  > hist_file
+  524  nvidia-smi
+  525  less j3
+  526  grep Loss j1 | less
+  527  less j1
+  528  less j1
+  529  grep bleu j1 | less
+  530  less j1
+  531  less j3
+  532  less j3
+  533  vim nmt/train.py
+  534  vim nmt/nmt.py 
+  535  pkill python
+  536  rm -rf nmt/nmt_model_2
+  537  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False --optimizer=adam --learning_rate=0.0001  > j3 2>&1 &
+  538  less j3
+  539  nvidia-smi
+  540  less j3
+  541  less j1
+  542  less j3
+  543  less j3
+  544  less j1
+  545  pkill python
+  546  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False --learning_rate=0.1  > j3 2>&1 &
+  547  pkill python
+  548  pkill python
+  549  rm -rf nmt/nmt_model_2
+  550  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_2 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False --optimizer=adam --learning_rate=0.0001  > j3 2>&1 &
+  551  less j3 
+  552  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_3 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False  --learning_rate=0.02  > j3.1 2>&1 &
+  553  less j3.1 
+  554  less j1
+  555  less j3
+  556  less j1
+  557  less j3
+  558  grep -ir First * | less
+  559  grep -ir First ./nmt/ | less
+  560  vim ./nmt/utils/vocab_utils.py
+  561  less nmt/nmt_data/vocab.tgt 
+  562  less j3
+  563  less j3.1
+  564  less j3.1
+  565  less j3
+  566  vim ./nmt/joint_attention_new1.py
+  567  #python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_4 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False   > j3.2 2>&1 &
+  568  nvidia-smi
+  569  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_4 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False   > j3.2 2>&1 &
+  570  less j3.2 
+  571  vim ./nmt/joint_attention_new1.py
+  572  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_4 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False   > j3.2 2>&1 &
+  573  less j3.2 
+  574  less j3.2 
+  575  less j3.1
+  576  less j3
+  577  grep perpl j3 | less
+  578  grep perpl j1 | less
+  579  grep perpl j2 | less
+  580  grep perpl j3.1 | less
+  581  grep perpl j3.2 | less
+  582  grep perpl j3.1 | less
+  583  grep perpl j3 | less
+  584  grep perpl j3 | less
+  585  grep perpl j3 | less
+  586  grep perpl j3.1 | less
+  587  grep perpl j3 | less
+  588  grep perpl j1 | less
+  589  grep perpl j2 | less
+  590  grep perpl j1 | less
+  591  grep perpl j3.1 | less
+  592  vimdiff j1 j2
+  593  less hist_file 
+  594  less j1
+  595  less hist_file 
+  596  less j1
+  597  grep perpl j3.1 | less
+  598  grep perpl j3 | less
+  599  nvidia-smi
+  600  grep perpl j3.2 | less
+  601  grep perpl bahdanau  | less
+  602  grep perpl luong  | less
+  603  less j1
+  604  less j2
+  605  less j3
+  606  less j3.1 
+  607  less j3.2
+  608  less j3.1 
+  609  less j3.1 
+  610  less j3.2
+  611  less j3.1
+  612  less j3.2
+  613  nvidia-smi
+  614  python -m nmt.nmt --vocab_prefix=nmt/nmt_data/vocab  --train_prefix=nmt/nmt_data/train  --dev_prefix=nmt/nmt_data/dev  --test_prefix=nmt/nmt_data/test  --out_dir=nmt/nmt_model_5 --num_train_steps=12000 --steps_per_stats=100 --num_layers=2  --num_units=128  --dropout=0.2 --metrics=bleu --attention_architecture=joint --colocate_gradients_with_ops=False   > j3.3 2>&1 &
+  615  less j3.3
+  616  less j3.2
+  617  less j3.1
+  618  less j3
+  619  less j3
+  620  less j3.1
+  621  less j3
+  622  less j3.1
+  623  grep perpl j3.2 | less
+  624  grep perpl j3.3 | less
+  625  grep perpl j3.2 | less
+  626  grep perpl j3.3 | less
+  627  grep perpl j3.1 | less
+  628  grep perpl j3 | less
+  629  grep perpl j1 | less
+  630  grep perpl j3.3 | less
+  631  grep perpl j3.3 | less
+  632  nvidia-smi
+  633  less j3.3
+  634  less j3.3
+  635  grep perpl j3.3 | less
+  636  less j3.3
+  637  grep perpl j3.3 | less
+  638  grep perpl j3.3 | less
+  639  nvidia-smi
+  640  grep perpl j3.3 | less
+  641  grep perpl j3.3 | less
+  642  grep perpl j3.3 | less
+  643  less j3.3
+  644  less j3.2
+  645  history > hist1
