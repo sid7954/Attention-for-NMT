@@ -348,12 +348,14 @@ class JointAttention(_BaseAttentionMechanism):
                                     #constraint=self.bias_constraint,
                                     dtype=self.dtype,
                                     trainable=True)
-    self.bias = tf.get_variable('bias',
-                                    shape=[self.vocab_size,],
-                                    # initializer=self.bias_initializer,
-                                    #constraint=self.bias_constraint,
-                                    dtype=self.dtype,
-                                    trainable=True)
+    # self.bias = tf.get_variable('bias',
+    #                                 shape=[self.vocab_size,],
+    #                                 # initializer=self.bias_initializer,
+    #                                 #constraint=self.bias_constraint,
+    #                                 dtype=self.dtype,
+    #                                 trainable=False)
+    self.bias = tf.range(1, self.vocab_size+1, 1)
+    self.bias = tf.reciprocal(self.bias)
 
     self.segment_kernels = {}
     for i in range(1, self.segment_length):
@@ -384,20 +386,20 @@ class JointAttention(_BaseAttentionMechanism):
     # return alignments
     encoder_parts = self.memory #batch, items, dim
 
-    eshape=encoder_parts.get_shape().as_list()
-    new_encoder_parts=encoder_parts
-    l=int(self.segment_length)
-    print("$$$$$$$$$$$$$$$$$$$$ ",l)
-    enc=tf.expand_dims(encoder_parts,3) 
-    for i in range(1,l):
-      #temp=tf.placeholder(tf.float32, shape=(i+1,1,1,1))
-      #k = tf.fill(tf.shape(temp), 1.0)
-      temp = tf.nn.conv2d(enc, self.segment_kernels[i+1], strides=[1,1,1,1], padding='VALID')
-      ans=tf.squeeze(temp,3)  
-      ans=tf.nn.relu(ans)
-      new_encoder_parts=tf.concat([new_encoder_parts,ans],1)
+    # eshape=encoder_parts.get_shape().as_list()
+    # new_encoder_parts=encoder_parts
+    # l=int(self.segment_length)
+    # print("$$$$$$$$$$$$$$$$$$$$ ",l)
+    # enc=tf.expand_dims(encoder_parts,3) 
+    # for i in range(1,l):
+    #   #temp=tf.placeholder(tf.float32, shape=(i+1,1,1,1))
+    #   #k = tf.fill(tf.shape(temp), 1.0)
+    #   temp = tf.nn.conv2d(enc, self.segment_kernels[i+1], strides=[1,1,1,1], padding='VALID')
+    #   ans=tf.squeeze(temp,3)  
+    #   ans=tf.nn.relu(ans)
+    #   new_encoder_parts=tf.concat([new_encoder_parts,ans],1)
 
-    encoder_parts=new_encoder_parts
+    # encoder_parts=new_encoder_parts
     decoder_parts = ops.convert_to_tensor(query, dtype=self.dtype)
     decoder_parts_len = len(decoder_parts.shape.as_list())
     eshape, dshape = tf.shape_n([encoder_parts, decoder_parts])
@@ -414,8 +416,10 @@ class JointAttention(_BaseAttentionMechanism):
     #batch, items, vocab
     logits=logits + tf.matmul(encoder_parts,tf.expand_dims(decoder_parts,1),transpose_b=True)
     #adding (d^T)(e_i)
+    logits=logits + self.bias
     logits = tf.reduce_max(logits, 1)
     # logits = 0*logits + tf.nn.xw_plus_b (decoder_parts, self.kernel1, self.bias1)
+    tf.print(logits,message="LOGITS: ")  
     return logits
 
   def get_context(self, query, token):

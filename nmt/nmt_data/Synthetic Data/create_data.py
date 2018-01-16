@@ -44,7 +44,7 @@ mapping=map_char(T)
 input_string=np.zeros(n)
 pos=np.arange(n)
 
-for s in range(105):
+for s in range(10500):
 	random.seed(s)
 	np.random.seed(s)
 	k=random.randint(1,n/3)
@@ -63,14 +63,14 @@ for s in range(105):
 	temp2=sorted(output_string)
 	for i in range(n-k):
 		temp2.append(0)
-	if(s<100):
+	if(s<10000):
 		for j in range(len(input_string)):
 			f3.write(str(int(input_string[j]))+" ")
 		f3.write("\n")
 		for j in range(len(temp2)):
 			f4.write(str(int(temp2[j]))+" ")
 		f4.write("\n")
-	elif(s<103):
+	elif(s<10300):
 		for j in range(len(input_string)):
 			f5.write(str(int(input_string[j]))+" ")
 		f5.write("\n")
