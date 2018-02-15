@@ -45,15 +45,14 @@ input_string=np.zeros(n)
 pos=np.arange(n)
 
 for s in range(10500):
-	random.seed(s)
-	np.random.seed(s)
+	input_string=np.zeros(n)
 	k=random.randint(1,n/3)
 	selected_char=np.random.choice(S,k,replace=False)
 	selected_pos=np.random.choice(pos,k,replace=False)
 	for i in range(k):
 		input_string[selected_pos[i]]=selected_char[i]
 	for i in range(n):
-		np.random.seed(i)
+		#np.random.seed(i)
 		if (int(input_string[i])==0):
 			input_string[i]=np.random.choice(B,1,replace=False)[0]
 
@@ -61,8 +60,8 @@ for s in range(10500):
 	for i in range(k):
 		output_string[i]=mapping[selected_char[i]]
 	temp2=sorted(output_string)
-	for i in range(n-k):
-		temp2.append(0)
+	#for i in range(n-k):
+	#	temp2.append(0)
 	if(s<10000):
 		for j in range(len(input_string)):
 			f3.write(str(int(input_string[j]))+" ")
